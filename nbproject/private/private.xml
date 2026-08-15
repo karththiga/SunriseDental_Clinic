@@ -3,13 +3,22 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/shagevan/Desktop/SunRiseDentalClinic/web/login.jsp</file>
             <file>file:/Users/shagevan/Desktop/SunRiseDentalClinic/web/dashboard.jsp</file>
+            <file>file:/Users/shagevan/Desktop/SunRiseDentalClinic/src/java/AppointmentValidationHandler.java</file>
+            <file>file:/Users/shagevan/Desktop/SunRiseDentalClinic/src/java/AppointmentConflictHandler.java</file>
+            <file>file:/Users/shagevan/Desktop/SunRiseDentalClinic/src/java/LogoutServlet.java</file>
+            <file>file:/Users/shagevan/Desktop/SunRiseDentalClinic/web/registerAppointment.jsp</file>
+            <file>file:/Users/shagevan/Desktop/SunRiseDentalClinic/src/java/AppointmentServlet.java</file>
+            <file>file:/Users/shagevan/Desktop/SunRiseDentalClinic/src/java/signupServlet.java</file>
+            <file>file:/Users/shagevan/Desktop/SunRiseDentalClinic/web/login.jsp</file>
+            <file>file:/Users/shagevan/Desktop/SunRiseDentalClinic/src/java/SearchAppointmentServlet.java</file>
             <file>file:/Users/shagevan/Desktop/SunRiseDentalClinic/src/java/loginServlet.java</file>
             <file>file:/Users/shagevan/Desktop/SunRiseDentalClinic/web/WEB-INF/web.xml</file>
+            <file>file:/Users/shagevan/Desktop/SunRiseDentalClinic/src/java/RequiredFieldHandler.java</file>
             <file>file:/Users/shagevan/Desktop/SunRiseDentalClinic/web/signup.jsp</file>
+            <file>file:/Users/shagevan/Desktop/SunRiseDentalClinic/src/java/PhoneValidationHandler.java</file>
+            <file>file:/Users/shagevan/Desktop/SunRiseDentalClinic/web/searchAppointment.jsp</file>
             <file>file:/Users/shagevan/Desktop/SunRiseDentalClinic/src/java/DBConnection.java</file>
-            <file>file:/Users/shagevan/Desktop/SunRiseDentalClinic/src/java/signupServlet.java</file>
         </group>
     </open-files>
 </project-private>

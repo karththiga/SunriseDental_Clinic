@@ -174,7 +174,7 @@
 
     <div class="menu-grid">
 
-        <a href="#"
+        <a href="registerAppointment.jsp"
            class="menu-card">
 
             <h3>
@@ -200,7 +200,7 @@
 
         </a>
 
-        <a href="#"
+        <a href="searchAppointment.jsp"
            class="menu-card">
 
             <h3>
