@@ -164,6 +164,8 @@
         <%
             String error =
                     request.getParameter("error");
+             String message =
+                    request.getParameter("param");
 
             String success =
                     request.getParameter("success");
@@ -207,8 +209,7 @@
         %>
 
         <div class="message error">
-            Database error.
-            Please try again.
+            ${message}
         </div>
 
         <%

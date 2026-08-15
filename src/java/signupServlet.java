@@ -183,7 +183,7 @@ public class signupServlet extends HttpServlet {
             e.printStackTrace();
 
             response.sendRedirect(
-                    "signup.jsp?error=database"
+                    "signup.jsp?error=database&param="+e.getMessage()
             );
         }
     }

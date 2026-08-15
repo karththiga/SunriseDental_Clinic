@@ -1,341 +1,237 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-
     <meta charset="UTF-8">
 
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Login - Hospital Management System</title>
+    <title>Login - Sunrise Dental Clinic</title>
 
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/CSS/CSS.css">
+    <style>
 
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+        }
+
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 470px;
+            background: white;
+            padding: 40px;
+            border-radius: 14px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #1f6feb;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 7px;
+            background: #1f6feb;
+            color: white;
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .message {
+            padding: 11px;
+            border-radius: 7px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .error {
+            background: #ffe5e5;
+            color: #b00020;
+        }
+
+        .success {
+            background: #e5f7e8;
+            color: #176b2c;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 22px;
+        }
+
+        .signup-link a {
+            text-decoration: none;
+            color: #1f6feb;
+            font-weight: bold;
+        }
+
+    </style>
 </head>
 
-<body class="modern-login-page">
+<body>
 
-<div class="login-overlay">
+<div class="page-container">
 
-    <div class="modern-login-container">
+    <div class="login-box">
 
-        <!-- =========================
-             LEFT SIDE
-             ========================= -->
-
-        <div class="login-welcome-section">
-
-            <div class="welcome-content">
-
-               <span class="welcome-badge">
-    Hospital Management System
-</span>
-
-<h1>
-    Better healthcare starts here.
-</h1>
-
-<p>
-    Sign in to manage patients, doctors,
-    appointments and hospital services efficiently.
-</p>
-
-               <div class="welcome-feature">
-    <span class="feature-icon">✓</span>
-    Easy patient management
-</div>
-
-<div class="welcome-feature">
-    <span class="feature-icon">✓</span>
-    Doctor and appointment management
-</div>
-
-<div class="welcome-feature">
-    <span class="feature-icon">✓</span>
-    Secure healthcare information
-</div>
-                </div>
-
-            </div>
-
+        <div class="logo">
+            Sunrise Dental Clinic
         </div>
 
+        <h1>Staff Login</h1>
 
-        <!-- =========================
-             RIGHT SIDE - LOGIN
-             ========================= -->
+        <p class="subtitle">
+            Login to access the clinic management system
+        </p>
 
-        <div class="modern-login-card">
+        <%
+            String error = request.getParameter("error");
+            String registered = request.getParameter("registered");
 
-            <div class="login-brand">
-                CARE<span>PLUS</span>
-            </div>
+            if ("invalid".equals(error)) {
+        %>
 
-            <h2>
-                Welcome Back
-            </h2>
+        <div class="message error">
+            Invalid email or password.
+        </div>
 
-            <p class="login-description">
-                Please enter your details to continue.
-            </p>
+        <%
+            } else if ("required".equals(error)) {
+        %>
 
+        <div class="message error">
+            Please enter your email and password.
+        </div>
 
-            <!-- =========================
-                 SIGNUP SUCCESS MESSAGE
-                 ========================= -->
+        <%
+            } else if ("database".equals(error)) {
+        %>
 
-            <%
-                String signupStatus =
-                        request.getParameter("signup");
+        <div class="message error">
+            Database error. Please try again.
+        </div>
 
-                if ("success".equals(signupStatus)) {
-            %>
+        <%
+            }
 
-            <div class="signup-success-message">
+            if ("true".equals(registered)) {
+        %>
 
-                ✓ Account created successfully!
+        <div class="message success">
+            Account created successfully. Please login.
+        </div>
 
-                <br>
+        <%
+            }
+        %>
 
-                You can now login using your new account.
+        <form
+            action="${pageContext.request.contextPath}/LoginServlet"
+            method="post">
 
-            </div>
+            <div class="form-group">
 
-            <%
-                }
-            %>
+                <label for="username">
+                    Email Address
+                </label>
 
-
-            <!-- =========================
-                 LOGIN ERROR MESSAGE
-                 ========================= -->
-
-            <%
-                String error =
-                        request.getParameter("error");
-
-                if ("invalid".equals(error)) {
-            %>
-
-            <div class="modern-error-message server-error">
-
-                Incorrect email address or password.
-
-            </div>
-
-            <%
-                } else if ("database".equals(error)) {
-            %>
-
-            <div class="modern-error-message server-error">
-
-                Database connection failed.
-                Please try again.
+                <input
+                    type="email"
+                    id="username"
+                    name="username"
+                    placeholder="Enter email address"
+                    required>
 
             </div>
 
-            <%
-                } else if ("driver".equals(error)) {
-            %>
+            <div class="form-group">
 
-            <div class="modern-error-message server-error">
+                <label for="password">
+                    Password
+                </label>
 
-                Database driver could not be loaded.
-
-            </div>
-
-            <%
-                }
-            %>
-
-
-            <!-- =========================
-                 LOGIN FORM
-                 ========================= -->
-
-            <form
-                action="${pageContext.request.contextPath}/LoginServlet"
-                method="post"
-                onsubmit="return validateLogin()">
-
-
-                <!-- Email -->
-
-                <div class="modern-form-group">
-
-                    <label for="loginEmail">
-                        Email Address
-                    </label>
-
-                    <div class="input-wrapper">
-
-                        <span class="input-icon">
-                            @
-                        </span>
-
-                        <input
-                            type="email"
-                            id="loginEmail"
-                            name="username"
-                            placeholder="Enter your email"
-                            autocomplete="email"
-                            required>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Password -->
-
-                <div class="modern-form-group">
-
-                    <label for="loginPassword">
-                        Password
-                    </label>
-
-                    <div class="input-wrapper">
-
-                        <span class="input-icon">
-                            🔒
-                        </span>
-
-                        <input
-                            type="password"
-                            id="loginPassword"
-                            name="password"
-                            placeholder="Enter your password"
-                            autocomplete="current-password"
-                            required>
-
-
-                        <button
-                            type="button"
-                            class="modern-password-toggle"
-                            onclick="togglePassword(
-                                'loginPassword',
-                                this
-                            )">
-
-                            Show
-
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Remember / Forgot -->
-
-                <div class="modern-login-options">
-
-                    <label class="modern-remember">
-
-                        <input
-                            type="checkbox"
-                            name="remember">
-
-                        <span>
-                            Remember me
-                        </span>
-
-                    </label>
-
-                    <a href="#"
-                       class="forgot-link">
-
-                        Forgot Password?
-
-                    </a>
-
-                </div>
-
-
-                <!-- JavaScript validation error -->
-
-                <p
-                    id="loginError"
-                    class="modern-error-message">
-                </p>
-
-
-                <!-- Login Button -->
-
-                <button
-                    type="submit"
-                    class="modern-login-button">
-
-                    <span>
-                        Login to Your Account
-                    </span>
-
-                    <span class="button-arrow">
-                        →
-                    </span>
-
-                </button>
-
-            </form>
-
-
-            <!-- Divider -->
-
-            <div class="divider">
-
-                <span>
-                    or
-                </span>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter password"
+                    required>
 
             </div>
 
+            <button type="submit">
+                Login
+            </button>
 
-            <!-- Sign Up -->
+        </form>
 
-            <p class="modern-signup-text">
-
-                New to Fashion Store?
-
-                <a href="${pageContext.request.contextPath}/signup.jsp">
-
-                    Create an Account
-
-                </a>
-
-            </p>
-
-
-            <!-- Guest -->
-
-            <a
-                href="${pageContext.request.contextPath}/HomePage.jsp"
-                class="modern-guest-link">
-
-                Continue as Guest
-
-            </a>
-
-
-            <p class="login-security-text">
-
-                🔒 Your information is safe and secure with us.
-
-            </p>
-
+        <div class="signup-link">
+            Don't have an account?
+            <a href="signup.jsp">Create Account</a>
         </div>
 
     </div>
 
 </div>
 
-
-<script src="${pageContext.request.contextPath}/JS/Jscript.js">
-</script>
-
 </body>
-
 </html>
