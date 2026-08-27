@@ -1,6 +1,6 @@
-
-
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,9 +39,8 @@ public class signupServlet extends HttpServlet {
         String confirmPassword =
                 request.getParameter("confirmPassword");
 
-        /*
-         * Check required fields
-         */
+
+        // Check required fields
         if (firstName == null || firstName.trim().isEmpty()
                 || lastName == null || lastName.trim().isEmpty()
                 || username == null || username.trim().isEmpty()
@@ -57,9 +56,8 @@ public class signupServlet extends HttpServlet {
             return;
         }
 
-        /*
-         * Check password length
-         */
+
+        // Check password length
         if (password.length() < 6) {
 
             response.sendRedirect(
@@ -69,9 +67,8 @@ public class signupServlet extends HttpServlet {
             return;
         }
 
-        /*
-         * Check password confirmation
-         */
+
+        // Check password confirmation
         if (!password.equals(confirmPassword)) {
 
             response.sendRedirect(
@@ -81,17 +78,29 @@ public class signupServlet extends HttpServlet {
             return;
         }
 
+
+        // Check phone number - exactly 10 digits
+        if (!phoneNumber.trim().matches("\\d{10}")) {
+
+            response.sendRedirect(
+                    "signup.jsp?error=phone"
+            );
+
+            return;
+        }
+
+
         try (
             Connection conn =
                     DBConnection.getConnection()
         ) {
 
-            /*
-             * Check whether email already exists
-             */
+            // Check whether email already exists
             String checkSql =
-                    "SELECT user_id FROM users "
+                    "SELECT user_id "
+                    + "FROM users "
                     + "WHERE username = ?";
+
 
             try (
                 PreparedStatement checkStmt =
@@ -103,28 +112,32 @@ public class signupServlet extends HttpServlet {
                         username.trim()
                 );
 
-                ResultSet rs =
-                        checkStmt.executeQuery();
 
-                if (rs.next()) {
+                try (
+                    ResultSet rs =
+                            checkStmt.executeQuery()
+                ) {
 
-                    response.sendRedirect(
-                            "signup.jsp?error=exists"
-                    );
+                    if (rs.next()) {
 
-                    return;
+                        response.sendRedirect(
+                                "signup.jsp?error=exists"
+                        );
+
+                        return;
+                    }
                 }
             }
 
-            /*
-             * Insert new user
-             */
+
+            // Insert Patient account
             String insertSql =
                     "INSERT INTO users "
                     + "(first_name, last_name, "
                     + "username, phone_number, "
                     + "password, role) "
                     + "VALUES (?, ?, ?, ?, ?, ?)";
+
 
             try (
                 PreparedStatement stmt =
@@ -156,18 +169,22 @@ public class signupServlet extends HttpServlet {
                         password
                 );
 
+                // New signup is always Patient
                 stmt.setString(
                         6,
-                        "Staff"
+                        "Patient"
                 );
+
 
                 int rows =
                         stmt.executeUpdate();
 
+
                 if (rows > 0) {
 
+                    // Send new patient to login page
                     response.sendRedirect(
-                            "signup.jsp?success=true"
+                            "login.jsp?registered=true"
                     );
 
                 } else {
@@ -178,12 +195,20 @@ public class signupServlet extends HttpServlet {
                 }
             }
 
+
         } catch (SQLException e) {
 
             e.printStackTrace();
 
+            String errorMessage =
+                    URLEncoder.encode(
+                            e.getMessage(),
+                            StandardCharsets.UTF_8
+                    );
+
             response.sendRedirect(
-                    "signup.jsp?error=database&param="+e.getMessage()
+                    "signup.jsp?error=database&param="
+                    + errorMessage
             );
         }
     }

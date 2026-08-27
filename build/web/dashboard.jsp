@@ -213,7 +213,7 @@
 
         </a>
 
-        <a href="#"
+        <a href="bill.jsp"
            class="menu-card">
 
             <h3>
@@ -225,6 +225,20 @@
             </p>
 
         </a>
+        
+        <a href="updateAppointment.jsp"
+   class="menu-card">
+
+    <h3>
+        Update Appointment
+    </h3>
+
+    <p>
+        Update appointment information
+        or restore the previous change.
+    </p>
+
+</a>
 
         <a href="#"
            class="menu-card">

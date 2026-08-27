@@ -26,6 +26,7 @@ public class loginServlet extends HttpServlet {
         String password =
                 request.getParameter("password");
 
+        // Check empty fields
         if (username == null || username.trim().isEmpty()
                 || password == null || password.trim().isEmpty()) {
 
@@ -48,8 +49,15 @@ public class loginServlet extends HttpServlet {
                     conn.prepareStatement(sql)
         ) {
 
-            stmt.setString(1, username.trim());
-            stmt.setString(2, password);
+            stmt.setString(
+                    1,
+                    username.trim()
+            );
+
+            stmt.setString(
+                    2,
+                    password
+            );
 
             ResultSet rs =
                     stmt.executeQuery();
@@ -59,6 +67,7 @@ public class loginServlet extends HttpServlet {
                 HttpSession session =
                         request.getSession();
 
+                // Store user details in session
                 session.setAttribute(
                         "user_id",
                         rs.getInt("user_id")
@@ -79,14 +88,48 @@ public class loginServlet extends HttpServlet {
                         rs.getString("last_name")
                 );
 
+                String role =
+                        rs.getString("role");
+
                 session.setAttribute(
                         "role",
-                        rs.getString("role")
+                        role
                 );
 
-                response.sendRedirect(
-                        "dashboard.jsp"
-                );
+                // Redirect according to role
+                if ("Admin".equalsIgnoreCase(role)) {
+
+                    response.sendRedirect(
+                            "adminDashboard.jsp"
+                    );
+
+                } else if ("Dentist".equalsIgnoreCase(role)) {
+
+                    response.sendRedirect(
+                            "dentistDashboard.jsp"
+                    );
+
+                } else if ("Cashier".equalsIgnoreCase(role)) {
+
+                    response.sendRedirect(
+                            "cashierDashboard.jsp"
+                    );
+
+                } else if ("Patient".equalsIgnoreCase(role)) {
+
+                    response.sendRedirect(
+                            "patientDashboard.jsp"
+                    );
+
+                } else {
+
+                    // Unknown role
+                    session.invalidate();
+
+                    response.sendRedirect(
+                            "login.jsp?error=invalidrole"
+                    );
+                }
 
             } else {
 

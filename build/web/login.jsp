@@ -137,10 +137,10 @@
             Sunrise Dental Clinic
         </div>
 
-        <h1>Staff Login</h1>
+        <h1>Login</h1>
 
         <p class="subtitle">
-            Login to access the clinic management system
+           Login to access Sunrise Dental Clinic
         </p>
 
         <%

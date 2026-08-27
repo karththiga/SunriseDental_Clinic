@@ -1,12 +1,21 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%
-    String username = (String) session.getAttribute("username");
-    String firstName = (String) session.getAttribute("first_name");
-    String lastName = (String) session.getAttribute("last_name");
-    String role = (String) session.getAttribute("role");
+    String username =
+            (String) session.getAttribute("username");
 
-    if (username == null) {
+    String firstName =
+            (String) session.getAttribute("first_name");
+
+    String lastName =
+            (String) session.getAttribute("last_name");
+
+    String role =
+            (String) session.getAttribute("role");
+
+    if (username == null
+            || !"Admin".equalsIgnoreCase(role)) {
+
         response.sendRedirect("login.jsp");
         return;
     }
@@ -14,14 +23,20 @@
 
 <!DOCTYPE html>
 <html>
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Dashboard - Sunrise Dental Clinic</title>
+    <title>
+        Admin Dashboard - Sunrise Dental Clinic
+    </title>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
@@ -37,28 +52,32 @@
             background: #1f6feb;
             color: white;
             padding: 18px 40px;
+
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .navbar-title {
-            font-size: 24px;
+            font-size: 23px;
             font-weight: bold;
         }
 
-        .navbar-user {
+        .navbar-right {
             display: flex;
             align-items: center;
             gap: 20px;
         }
 
-        .logout-btn {
+        .logout {
             background: white;
             color: #1f6feb;
-            text-decoration: none;
+
             padding: 9px 18px;
+
             border-radius: 6px;
+
+            text-decoration: none;
             font-weight: bold;
         }
 
@@ -70,10 +89,15 @@
 
         .welcome-box {
             background: white;
+
             padding: 30px;
+
             border-radius: 12px;
+
             margin-bottom: 30px;
-            box-shadow: 0 5px 18px rgba(0,0,0,0.08);
+
+            box-shadow:
+                0 5px 18px rgba(0,0,0,0.08);
         }
 
         .welcome-box h1 {
@@ -82,8 +106,8 @@
         }
 
         .welcome-box p {
-            margin: 5px 0;
             color: #666;
+            margin: 5px 0;
         }
 
         .section-title {
@@ -92,28 +116,41 @@
 
         .menu-grid {
             display: grid;
+
             grid-template-columns:
                 repeat(auto-fit, minmax(220px, 1fr));
+
             gap: 20px;
         }
 
         .menu-card {
             background: white;
+
             padding: 25px;
+
             border-radius: 12px;
+
             text-decoration: none;
+
             color: #222;
-            box-shadow: 0 5px 18px rgba(0,0,0,0.08);
+
+            box-shadow:
+                0 5px 18px rgba(0,0,0,0.08);
+
             transition: 0.2s;
         }
 
         .menu-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+
+            box-shadow:
+                0 8px 22px rgba(0,0,0,0.12);
         }
 
         .menu-card h3 {
             margin-top: 0;
+            margin-bottom: 10px;
+
             color: #1f6feb;
         }
 
@@ -122,7 +159,9 @@
             color: #666;
             line-height: 1.5;
         }
+
     </style>
+
 </head>
 
 <body>
@@ -130,62 +169,99 @@
 <div class="navbar">
 
     <div class="navbar-title">
-        Sunrise Dental Clinic
+        Sunrise Dental Clinic | Admin
     </div>
 
-    <div class="navbar-user">
+    <div class="navbar-right">
 
         <span>
             <%= firstName %> <%= lastName %>
         </span>
 
-        <a class="logout-btn"
+        <a class="logout"
            href="${pageContext.request.contextPath}/LogoutServlet">
+
             Logout
+
         </a>
 
     </div>
 
 </div>
 
+
 <div class="container">
 
     <div class="welcome-box">
 
         <h1>
-            Welcome, <%= firstName %>!
+            Welcome, <%= firstName %>
         </h1>
 
         <p>
-            Logged in as:
-            <strong><%= username %></strong>
+            Administrator Dashboard
         </p>
 
         <p>
-            Role:
-            <strong><%= role %></strong>
+            Manage users, dentists, treatments,
+            appointments and reports.
         </p>
 
     </div>
 
+
     <h2 class="section-title">
-        Clinic Management
+        Administration
     </h2>
+
 
     <div class="menu-grid">
 
-        <a href="registerAppointment.jsp"
+
+       <a href="${pageContext.request.contextPath}/ManageUsersServlet"
            class="menu-card">
 
             <h3>
-                New Appointment
+                Manage Users
             </h3>
 
             <p>
-                Register a new patient appointment.
+                View and manage patient,
+                dentist and cashier accounts.
             </p>
 
         </a>
+
+
+        <a href="${pageContext.request.contextPath}/ManageDentistsServlet"
+           class="menu-card">
+
+            <h3>
+                Manage Dentists
+            </h3>
+
+            <p>
+                Add, update and view
+                dentist information.
+            </p>
+
+        </a>
+
+
+        <a href="#"
+           class="menu-card">
+
+            <h3>
+                Manage Treatments
+            </h3>
+
+            <p>
+                Add and update treatment
+                names and treatment costs.
+            </p>
+
+        </a>
+
 
         <a href="#"
            class="menu-card">
@@ -195,52 +271,14 @@
             </h3>
 
             <p>
-                View all registered appointments.
+                View all registered
+                patient appointments.
             </p>
 
         </a>
 
-        <a href="searchAppointment.jsp"
-           class="menu-card">
 
-            <h3>
-                Search Appointment
-            </h3>
-
-            <p>
-                Search using an appointment number.
-            </p>
-
-        </a>
-
-        <a href="bill.jsp"
-           class="menu-card">
-
-            <h3>
-                Billing
-            </h3>
-
-            <p>
-                Calculate treatment cost and print bills.
-            </p>
-
-        </a>
-        
-        <a href="updateAppointment.jsp"
-   class="menu-card">
-
-    <h3>
-        Update Appointment
-    </h3>
-
-    <p>
-        Update appointment information
-        or restore the previous change.
-    </p>
-
-</a>
-
-        <a href="#"
+        <a href="reports.jsp"
            class="menu-card">
 
             <h3>
@@ -248,10 +286,12 @@
             </h3>
 
             <p>
-                View clinic reports and appointment summaries.
+                View appointment and
+                clinic reports.
             </p>
 
         </a>
+
 
         <a href="#"
            class="menu-card">
@@ -261,14 +301,30 @@
             </h3>
 
             <p>
-                View instructions for using the system.
+                View instructions for
+                using the administration system.
             </p>
 
         </a>
+           <a href="${pageContext.request.contextPath}/ManageAppointmentRequestsServlet"
+   class="menu-card">
+
+    <h3>
+        Appointment Requests
+    </h3>
+
+    <p>
+        View patient requests, check dentist
+        availability and assign appointments.
+    </p>
+
+</a>
+
 
     </div>
 
 </div>
 
 </body>
+
 </html>

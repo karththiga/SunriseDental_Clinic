@@ -154,8 +154,7 @@
         </div>
 
         <h1>
-            Create Staff Account
-        </h1>
+            Create Patient Account
 
         <p class="subtitle">
             Register to access the clinic management system
