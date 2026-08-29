@@ -124,6 +124,19 @@
             font-weight: bold;
         }
 
+        .home-link {
+            display: block;
+            margin-top: 14px;
+            text-align: center;
+            color: #667;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .home-link:hover {
+            color: #1f6feb;
+        }
+
     </style>
 </head>
 
@@ -228,6 +241,11 @@
             Don't have an account?
             <a href="signup.jsp">Create Account</a>
         </div>
+
+        <a class="home-link"
+           href="${pageContext.request.contextPath}/HomeServlet">
+            ← Back to clinic home
+        </a>
 
     </div>
 

@@ -1,17 +1,14 @@
 import java.io.IOException;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import java.time.LocalDate;
-import java.time.format.TextStyle;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import jakarta.servlet.ServletException;
@@ -24,8 +21,7 @@ import jakarta.servlet.http.HttpSession;
 
 
 @WebServlet("/PatientRequestAppointmentServlet")
-public class PatientRequestAppointmentServlet
-        extends HttpServlet {
+public class PatientRequestAppointmentServlet extends HttpServlet {
 
 
     @Override
@@ -35,19 +31,45 @@ public class PatientRequestAppointmentServlet
             throws ServletException, IOException {
 
         if (!isPatient(request)) {
-
             response.sendRedirect("login.jsp");
             return;
         }
 
         loadTreatments(request);
 
+        String treatmentIdValue =
+                request.getParameter("treatmentId");
+
+        if (treatmentIdValue != null
+                && !treatmentIdValue.trim().isEmpty()) {
+
+            try {
+
+                int treatmentId =
+                        Integer.parseInt(treatmentIdValue);
+
+                loadDentistsByTreatment(
+                        treatmentId,
+                        request
+                );
+
+                request.setAttribute(
+                        "selectedTreatmentId",
+                        treatmentId
+                );
+
+            } catch (NumberFormatException e) {
+
+                request.setAttribute(
+                        "error",
+                        "Invalid treatment selected."
+                );
+            }
+        }
+
         request.getRequestDispatcher(
                 "/patientRequestAppointment.jsp"
-        ).forward(
-                request,
-                response
-        );
+        ).forward(request, response);
     }
 
 
@@ -58,17 +80,22 @@ public class PatientRequestAppointmentServlet
             throws ServletException, IOException {
 
         if (!isPatient(request)) {
-
             response.sendRedirect("login.jsp");
             return;
         }
 
+        HttpSession session =
+                request.getSession(false);
 
-        String action =
-                request.getParameter("action");
+        int userId =
+                (Integer) session.getAttribute("user_id");
+
 
         String treatmentIdValue =
                 request.getParameter("treatmentId");
+
+        String dentistIdValue =
+                request.getParameter("dentistId");
 
         String appointmentDate =
                 request.getParameter("appointmentDate");
@@ -78,22 +105,21 @@ public class PatientRequestAppointmentServlet
 
 
         if (treatmentIdValue == null
-                || treatmentIdValue.isEmpty()
+                || treatmentIdValue.trim().isEmpty()
+                || dentistIdValue == null
+                || dentistIdValue.trim().isEmpty()
                 || appointmentDate == null
-                || appointmentDate.isEmpty()
+                || appointmentDate.trim().isEmpty()
                 || appointmentTime == null
-                || appointmentTime.isEmpty()) {
+                || appointmentTime.trim().isEmpty()) {
 
             request.setAttribute(
                     "error",
-                    "Please select treatment, date and time."
+                    "Please complete all appointment fields."
             );
 
-            loadTreatments(request);
-
-            request.getRequestDispatcher(
-                    "/patientRequestAppointment.jsp"
-            ).forward(
+            reloadForm(
+                    treatmentIdValue,
                     request,
                     response
             );
@@ -103,7 +129,7 @@ public class PatientRequestAppointmentServlet
 
 
         int treatmentId;
-
+        int dentistId;
 
         try {
 
@@ -112,18 +138,20 @@ public class PatientRequestAppointmentServlet
                             treatmentIdValue
                     );
 
+            dentistId =
+                    Integer.parseInt(
+                            dentistIdValue
+                    );
+
         } catch (NumberFormatException e) {
 
             request.setAttribute(
                     "error",
-                    "Invalid treatment."
+                    "Invalid treatment or dentist."
             );
 
-            loadTreatments(request);
-
-            request.getRequestDispatcher(
-                    "/patientRequestAppointment.jsp"
-            ).forward(
+            reloadForm(
+                    treatmentIdValue,
                     request,
                     response
             );
@@ -132,15 +160,9 @@ public class PatientRequestAppointmentServlet
         }
 
 
-        /*
-         * Validate date
-         */
-        LocalDate selectedDate;
-
-
         try {
 
-            selectedDate =
+            LocalDate selectedDate =
                     LocalDate.parse(
                             appointmentDate
                     );
@@ -153,18 +175,14 @@ public class PatientRequestAppointmentServlet
                         "Appointment date cannot be in the past."
                 );
 
-                loadTreatments(request);
-
-                request.getRequestDispatcher(
-                        "/patientRequestAppointment.jsp"
-                ).forward(
+                reloadForm(
+                        treatmentIdValue,
                         request,
                         response
                 );
 
                 return;
             }
-
 
         } catch (Exception e) {
 
@@ -173,11 +191,8 @@ public class PatientRequestAppointmentServlet
                     "Invalid appointment date."
             );
 
-            loadTreatments(request);
-
-            request.getRequestDispatcher(
-                    "/patientRequestAppointment.jsp"
-            ).forward(
+            reloadForm(
+                    treatmentIdValue,
                     request,
                     response
             );
@@ -186,103 +201,23 @@ public class PatientRequestAppointmentServlet
         }
 
 
-        /*
-         * Keep selected values
-         */
-        request.setAttribute(
-                "selectedTreatmentId",
-                treatmentId
-        );
+        try {
 
-        request.setAttribute(
-                "selectedDate",
-                appointmentDate
-        );
-
-        request.setAttribute(
-                "selectedTime",
-                appointmentTime
-        );
-
-
-        /*
-         * CHECK AVAILABLE DENTISTS
-         */
-        if ("check".equalsIgnoreCase(action)) {
-
-            try {
-
-                loadAvailableDentists(
-                        treatmentId,
-                        selectedDate,
-                        appointmentTime,
-                        request
-                );
-
-            } catch (SQLException e) {
-
-                e.printStackTrace();
+            /*
+             * Validate that the selected dentist
+             * really provides this treatment.
+             */
+            if (!dentistProvidesTreatment(
+                    dentistId,
+                    treatmentId)) {
 
                 request.setAttribute(
                         "error",
-                        "Unable to check dentist availability."
-                );
-            }
-
-
-            loadTreatments(request);
-
-
-            request.getRequestDispatcher(
-                    "/patientRequestAppointment.jsp"
-            ).forward(
-                    request,
-                    response
-            );
-
-            return;
-        }
-
-
-        /*
-         * SUBMIT APPOINTMENT REQUEST
-         */
-        if ("submit".equalsIgnoreCase(action)) {
-
-            String dentistIdValue =
-                    request.getParameter("dentistId");
-
-
-            if (dentistIdValue == null
-                    || dentistIdValue.isEmpty()) {
-
-                request.setAttribute(
-                        "error",
-                        "Please select an available dentist."
+                        "Selected dentist does not provide this treatment."
                 );
 
-
-                try {
-
-                    loadAvailableDentists(
-                            treatmentId,
-                            selectedDate,
-                            appointmentTime,
-                            request
-                    );
-
-                } catch (SQLException e) {
-
-                    e.printStackTrace();
-                }
-
-
-                loadTreatments(request);
-
-
-                request.getRequestDispatcher(
-                        "/patientRequestAppointment.jsp"
-                ).forward(
+                reloadForm(
+                        treatmentIdValue,
                         request,
                         response
                 );
@@ -291,28 +226,19 @@ public class PatientRequestAppointmentServlet
             }
 
 
-            int dentistId;
+            Map<String, String> patient =
+                    getPatientDetails(userId);
 
 
-            try {
-
-                dentistId =
-                        Integer.parseInt(
-                                dentistIdValue
-                        );
-
-            } catch (NumberFormatException e) {
+            if (patient == null) {
 
                 request.setAttribute(
                         "error",
-                        "Invalid dentist."
+                        "Patient account not found."
                 );
 
-                loadTreatments(request);
-
-                request.getRequestDispatcher(
-                        "/patientRequestAppointment.jsp"
-                ).forward(
+                reloadForm(
+                        treatmentIdValue,
                         request,
                         response
                 );
@@ -321,227 +247,118 @@ public class PatientRequestAppointmentServlet
             }
 
 
-            HttpSession session =
-                    request.getSession(false);
+            String sql =
+                    "INSERT INTO appointments "
+                    + "(appointment_number, "
+                    + "patient_user_id, "
+                    + "patient_name, "
+                    + "address, "
+                    + "contact_number, "
+                    + "dentist_id, "
+                    + "treatment_id, "
+                    + "appointment_date, "
+                    + "appointment_time, "
+                    + "status) "
+                    + "VALUES "
+                    + "(NULL, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')";
 
 
-            int userId =
-                    (Integer) session.getAttribute(
-                            "user_id"
-                    );
+            try (
+                Connection conn =
+                        DBConnection.getConnection();
 
+                PreparedStatement stmt =
+                        conn.prepareStatement(sql)
+            ) {
 
-            try {
-
-                /*
-                 * Recheck availability before insert
-                 */
-                if (!isDentistAvailable(
-                        dentistId,
-                        treatmentId,
-                        selectedDate,
-                        appointmentTime)) {
-
-                    request.setAttribute(
-                            "error",
-                            "The selected dentist is no longer available."
-                    );
-
-                    loadAvailableDentists(
-                            treatmentId,
-                            selectedDate,
-                            appointmentTime,
-                            request
-                    );
-
-                    loadTreatments(request);
-
-                    request.getRequestDispatcher(
-                            "/patientRequestAppointment.jsp"
-                    ).forward(
-                            request,
-                            response
-                    );
-
-                    return;
-                }
-
-
-                Map<String, String> patient =
-                        getPatientDetails(
-                                userId
-                        );
-
-
-                if (patient == null) {
-
-                    request.setAttribute(
-                            "error",
-                            "Patient account not found."
-                    );
-
-                } else {
-
-                    String sql =
-                            "INSERT INTO appointments "
-                            + "(appointment_number, "
-                            + "patient_user_id, "
-                            + "patient_name, "
-                            + "address, "
-                            + "contact_number, "
-                            + "dentist_id, "
-                            + "treatment_id, "
-                            + "appointment_date, "
-                            + "appointment_time, "
-                            + "status) "
-                            + "VALUES "
-                            + "(NULL, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')";
-
-
-                    try (
-                        Connection conn =
-                                DBConnection.getConnection();
-
-                        PreparedStatement stmt =
-                                conn.prepareStatement(sql)
-                    ) {
-
-                        stmt.setInt(
-                                1,
-                                userId
-                        );
-
-                        stmt.setString(
-                                2,
-                                patient.get("name")
-                        );
-
-                        stmt.setString(
-                                3,
-                                ""
-                        );
-
-                        stmt.setString(
-                                4,
-                                patient.get("phone")
-                        );
-
-                        stmt.setInt(
-                                5,
-                                dentistId
-                        );
-
-                        stmt.setInt(
-                                6,
-                                treatmentId
-                        );
-
-                        stmt.setString(
-                                7,
-                                appointmentDate
-                        );
-
-                        stmt.setString(
-                                8,
-                                appointmentTime
-                        );
-
-                        stmt.executeUpdate();
-                    }
-
-
-                    request.setAttribute(
-                            "success",
-                            "Appointment request submitted successfully. "
-                            + "Status is Pending."
-                    );
-                }
-
-
-            } catch (SQLException e) {
-
-                e.printStackTrace();
-
-                request.setAttribute(
-                        "error",
-                        "Unable to submit appointment request."
+                stmt.setInt(
+                        1,
+                        userId
                 );
+
+                stmt.setString(
+                        2,
+                        patient.get("name")
+                );
+
+                stmt.setString(
+                        3,
+                        ""
+                );
+
+                stmt.setString(
+                        4,
+                        patient.get("phone")
+                );
+
+                stmt.setInt(
+                        5,
+                        dentistId
+                );
+
+                stmt.setInt(
+                        6,
+                        treatmentId
+                );
+
+                stmt.setString(
+                        7,
+                        appointmentDate
+                );
+
+                stmt.setString(
+                        8,
+                        appointmentTime
+                );
+
+                stmt.executeUpdate();
             }
 
 
-            loadTreatments(request);
+            request.setAttribute(
+                    "success",
+                    "Appointment request submitted successfully. "
+                    + "The administrator will check dentist availability."
+            );
 
 
-            request.getRequestDispatcher(
-                    "/patientRequestAppointment.jsp"
-            ).forward(
-                    request,
-                    response
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+
+            request.setAttribute(
+                    "error",
+                    "Unable to submit appointment request."
             );
         }
+
+
+        loadTreatments(request);
+
+        request.getRequestDispatcher(
+                "/patientRequestAppointment.jsp"
+        ).forward(request, response);
     }
 
 
-
-    private boolean isPatient(
-            HttpServletRequest request) {
-
-        HttpSession session =
-                request.getSession(false);
-
-
-        return session != null
-                && session.getAttribute("username") != null
-                && "Patient".equalsIgnoreCase(
-                        (String) session.getAttribute("role")
-                );
-    }
-
-
-
-    private void loadAvailableDentists(
+    private void loadDentistsByTreatment(
             int treatmentId,
-            LocalDate date,
-            String appointmentTime,
-            HttpServletRequest request)
-            throws SQLException {
-
+            HttpServletRequest request) {
 
         List<Map<String, Object>> dentists =
                 new ArrayList<>();
-
-
-        String dayName =
-                date.getDayOfWeek()
-                        .getDisplayName(
-                                TextStyle.FULL,
-                                Locale.ENGLISH
-                        );
 
 
         String sql =
                 "SELECT "
                 + "d.dentist_id, "
                 + "d.dentist_name, "
-                + "d.specialization, "
-                + "d.available_from, "
-                + "d.available_to "
+                + "d.specialization "
                 + "FROM dentists d "
                 + "INNER JOIN dentist_treatments dt "
                 + "ON d.dentist_id = dt.dentist_id "
                 + "WHERE dt.treatment_id = ? "
                 + "AND d.status = 'Active' "
-                + "AND d.available_day = ? "
-                + "AND ? BETWEEN d.available_from "
-                + "AND d.available_to "
-                + "AND NOT EXISTS ( "
-                + "SELECT 1 "
-                + "FROM appointments a "
-                + "WHERE a.dentist_id = d.dentist_id "
-                + "AND a.appointment_date = ? "
-                + "AND a.appointment_time = ? "
-                + "AND a.status IN ('Pending','Confirmed') "
-                + ") "
                 + "ORDER BY d.dentist_name";
 
 
@@ -558,26 +375,6 @@ public class PatientRequestAppointmentServlet
                     treatmentId
             );
 
-            stmt.setString(
-                    2,
-                    dayName
-            );
-
-            stmt.setString(
-                    3,
-                    appointmentTime
-            );
-
-            stmt.setDate(
-                    4,
-                    java.sql.Date.valueOf(date)
-            );
-
-            stmt.setString(
-                    5,
-                    appointmentTime
-            );
-
 
             ResultSet rs =
                     stmt.executeQuery();
@@ -587,7 +384,6 @@ public class PatientRequestAppointmentServlet
 
                 Map<String, Object> dentist =
                         new HashMap<>();
-
 
                 dentist.put(
                         "dentistId",
@@ -604,70 +400,41 @@ public class PatientRequestAppointmentServlet
                         rs.getString("specialization")
                 );
 
-                dentist.put(
-                        "availableFrom",
-                        rs.getTime("available_from")
-                );
-
-                dentist.put(
-                        "availableTo",
-                        rs.getTime("available_to")
-                );
-
-
                 dentists.add(dentist);
             }
+
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+
+            request.setAttribute(
+                    "error",
+                    "Unable to load dentists."
+            );
         }
 
 
         request.setAttribute(
-                "availableDentists",
+                "dentists",
                 dentists
-        );
-
-        request.setAttribute(
-                "availabilityChecked",
-                true
         );
     }
 
 
-
-    private boolean isDentistAvailable(
+    private boolean dentistProvidesTreatment(
             int dentistId,
-            int treatmentId,
-            LocalDate date,
-            String appointmentTime)
+            int treatmentId)
             throws SQLException {
 
-
-        String dayName =
-                date.getDayOfWeek()
-                        .getDisplayName(
-                                TextStyle.FULL,
-                                Locale.ENGLISH
-                        );
-
-
         String sql =
-                "SELECT d.dentist_id "
-                + "FROM dentists d "
-                + "INNER JOIN dentist_treatments dt "
-                + "ON d.dentist_id = dt.dentist_id "
-                + "WHERE d.dentist_id = ? "
+                "SELECT 1 "
+                + "FROM dentist_treatments dt "
+                + "INNER JOIN dentists d "
+                + "ON dt.dentist_id = d.dentist_id "
+                + "WHERE dt.dentist_id = ? "
                 + "AND dt.treatment_id = ? "
-                + "AND d.status = 'Active' "
-                + "AND d.available_day = ? "
-                + "AND ? BETWEEN d.available_from "
-                + "AND d.available_to "
-                + "AND NOT EXISTS ( "
-                + "SELECT 1 "
-                + "FROM appointments a "
-                + "WHERE a.dentist_id = d.dentist_id "
-                + "AND a.appointment_date = ? "
-                + "AND a.appointment_time = ? "
-                + "AND a.status IN ('Pending','Confirmed') "
-                + ")";
+                + "AND d.status = 'Active'";
 
 
         try (
@@ -688,26 +455,6 @@ public class PatientRequestAppointmentServlet
                     treatmentId
             );
 
-            stmt.setString(
-                    3,
-                    dayName
-            );
-
-            stmt.setString(
-                    4,
-                    appointmentTime
-            );
-
-            stmt.setDate(
-                    5,
-                    java.sql.Date.valueOf(date)
-            );
-
-            stmt.setString(
-                    6,
-                    appointmentTime
-            );
-
 
             ResultSet rs =
                     stmt.executeQuery();
@@ -718,11 +465,9 @@ public class PatientRequestAppointmentServlet
     }
 
 
-
     private Map<String, String> getPatientDetails(
             int userId)
             throws SQLException {
-
 
         String sql =
                 "SELECT first_name, "
@@ -756,7 +501,6 @@ public class PatientRequestAppointmentServlet
                 Map<String, String> patient =
                         new HashMap<>();
 
-
                 patient.put(
                         "name",
                         rs.getString("first_name")
@@ -764,26 +508,21 @@ public class PatientRequestAppointmentServlet
                         + rs.getString("last_name")
                 );
 
-
                 patient.put(
                         "phone",
                         rs.getString("phone_number")
                 );
 
-
                 return patient;
             }
         }
-
 
         return null;
     }
 
 
-
     private void loadTreatments(
             HttpServletRequest request) {
-
 
         List<Map<String, Object>> treatments =
                 new ArrayList<>();
@@ -813,7 +552,6 @@ public class PatientRequestAppointmentServlet
                 Map<String, Object> treatment =
                         new HashMap<>();
 
-
                 treatment.put(
                         "treatmentId",
                         rs.getInt("treatment_id")
@@ -829,10 +567,8 @@ public class PatientRequestAppointmentServlet
                         rs.getBigDecimal("treatment_cost")
                 );
 
-
                 treatments.add(treatment);
             }
-
 
         } catch (SQLException e) {
 
@@ -849,5 +585,59 @@ public class PatientRequestAppointmentServlet
                 "treatments",
                 treatments
         );
+    }
+
+
+    private boolean isPatient(
+            HttpServletRequest request) {
+
+        HttpSession session =
+                request.getSession(false);
+
+        return session != null
+                && session.getAttribute("username") != null
+                && "Patient".equalsIgnoreCase(
+                        (String) session.getAttribute("role")
+                );
+    }
+
+
+    private void reloadForm(
+            String treatmentIdValue,
+            HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException {
+
+        loadTreatments(request);
+
+        try {
+
+            if (treatmentIdValue != null
+                    && !treatmentIdValue.isEmpty()) {
+
+                int treatmentId =
+                        Integer.parseInt(
+                                treatmentIdValue
+                        );
+
+                request.setAttribute(
+                        "selectedTreatmentId",
+                        treatmentId
+                );
+
+                loadDentistsByTreatment(
+                        treatmentId,
+                        request
+                );
+            }
+
+        } catch (NumberFormatException e) {
+
+            // Ignore invalid treatment ID
+        }
+
+        request.getRequestDispatcher(
+                "/patientRequestAppointment.jsp"
+        ).forward(request, response);
     }
 }
