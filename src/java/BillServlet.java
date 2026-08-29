@@ -66,7 +66,7 @@ public class BillServlet extends HttpServlet {
         try {
 
             /*
-             * FACade Design Pattern
+             * Facade Pattern
              *
              * The Servlet calls only
              * one simple Facade method.

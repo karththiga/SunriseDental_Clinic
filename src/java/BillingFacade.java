@@ -3,9 +3,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Facade Pattern: presents one billing operation to the servlet while hiding
+ * appointment lookup, charge composition and bill persistence.
+ */
 public class BillingFacade {
-
-    private static final double CONSULTATION_FEE = 2000.00;
 
     /*
      * Main Facade method
@@ -27,31 +29,26 @@ public class BillingFacade {
         }
 
         /*
-         * Step 2:
-         * Add consultation fee
+         * Step 2: Decorator Pattern
+         * Begin with the treatment charge and decorate it with the selected
+         * dentist's consultation fee. Future charges can be added as new
+         * decorators without changing the base charge class.
          */
-        bill.setConsultationFee(
-                CONSULTATION_FEE
+        BillCharge totalCharge = new ConsultationFeeDecorator(
+                new TreatmentCharge(bill.getTreatmentCost()),
+                bill.getConsultationFee()
         );
+
+        bill.setTotalAmount(totalCharge.getAmount());
 
         /*
          * Step 3:
-         * Calculate total
-         */
-        double total =
-                bill.getTreatmentCost()
-                + bill.getConsultationFee();
-
-        bill.setTotalAmount(total);
-
-        /*
-         * Step 4:
          * Save bill
          */
         saveBill(bill);
 
         /*
-         * Step 5:
+         * Step 4:
          * Return completed bill
          */
         return bill;
@@ -74,6 +71,7 @@ public class BillingFacade {
                 + "a.appointment_date, "
                 + "a.appointment_time, "
                 + "d.dentist_name, "
+                + "d.consultation_fee, "
                 + "t.treatment_name, "
                 + "t.treatment_cost "
                 + "FROM appointments a "
@@ -143,6 +141,12 @@ public class BillingFacade {
                 bill.setTreatmentCost(
                         rs.getDouble(
                                 "treatment_cost"
+                        )
+                );
+
+                bill.setConsultationFee(
+                        rs.getDouble(
+                                "consultation_fee"
                         )
                 );
 

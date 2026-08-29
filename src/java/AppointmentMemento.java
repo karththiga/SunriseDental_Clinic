@@ -1,5 +1,9 @@
 import java.io.Serializable;
 
+/**
+ * Memento Pattern: immutable snapshot of the appointment fields that can be
+ * edited. It exposes state for restoration without exposing mutation.
+ */
 public class AppointmentMemento implements Serializable {
 
     private final String appointmentNumber;

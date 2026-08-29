@@ -1,5 +1,9 @@
 import java.io.Serializable;
 
+/**
+ * Memento caretaker: stores the latest snapshot without depending on how the
+ * appointment state is represented internally.
+ */
 public class AppointmentCaretaker implements Serializable {
 
     private AppointmentMemento memento;

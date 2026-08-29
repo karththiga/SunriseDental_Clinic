@@ -20,50 +20,12 @@ public class AppointmentServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        Appointment appointment =
-                new Appointment();
-
-        appointment.setAppointmentNumber(
-                request.getParameter(
-                        "appointmentNumber"
-                )
-        );
-
-        appointment.setPatientName(
-                request.getParameter(
-                        "patientName"
-                )
-        );
-
-        appointment.setAddress(
-                request.getParameter(
-                        "address"
-                )
-        );
-
-        appointment.setContactNumber(
-                request.getParameter(
-                        "contactNumber"
-                )
-        );
+        int dentistId;
+        int treatmentId;
 
         try {
-
-            appointment.setDentistId(
-                    Integer.parseInt(
-                            request.getParameter(
-                                    "dentistId"
-                            )
-                    )
-            );
-
-            appointment.setTreatmentId(
-                    Integer.parseInt(
-                            request.getParameter(
-                                    "treatmentId"
-                            )
-                    )
-            );
+            dentistId = Integer.parseInt(request.getParameter("dentistId"));
+            treatmentId = Integer.parseInt(request.getParameter("treatmentId"));
 
         } catch (NumberFormatException e) {
 
@@ -75,37 +37,31 @@ public class AppointmentServlet extends HttpServlet {
             return;
         }
 
-        appointment.setAppointmentDate(
-                request.getParameter(
-                        "appointmentDate"
-                )
-        );
-
-        appointment.setAppointmentTime(
-                request.getParameter(
-                        "appointmentTime"
-                )
-        );
+        /*
+         * Builder Pattern: assemble the multi-field domain object in one
+         * readable expression before it enters validation and persistence.
+         */
+        Appointment appointment = Appointment.builder()
+                .appointmentNumber(request.getParameter("appointmentNumber"))
+                .patientName(request.getParameter("patientName"))
+                .address(request.getParameter("address"))
+                .contactNumber(request.getParameter("contactNumber"))
+                .dentistId(dentistId)
+                .treatmentId(treatmentId)
+                .appointmentDate(request.getParameter("appointmentDate"))
+                .appointmentTime(request.getParameter("appointmentTime"))
+                .build();
 
         /*
-         * Chain of Responsibility
+         * Factory + Chain of Responsibility:
+         * the factory owns handler creation/order; this servlet only invokes
+         * the returned validation pipeline.
          */
-
-        AppointmentValidationHandler required =
-                new RequiredFieldHandler();
-
-        AppointmentValidationHandler phone =
-                new PhoneValidationHandler();
-
-        AppointmentValidationHandler conflict =
-                new AppointmentConflictHandler();
-
-        required
-                .setNext(phone)
-                .setNext(conflict);
+        AppointmentValidationHandler validationChain =
+                AppointmentValidationFactory.createRegistrationChain();
 
         String validationError =
-                required.validate(appointment);
+                validationChain.validate(appointment);
 
         if (validationError != null) {
 
