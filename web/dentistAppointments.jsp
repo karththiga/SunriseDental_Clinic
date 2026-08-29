@@ -39,7 +39,7 @@
           content="width=device-width, initial-scale=1.0">
 
     <title>
-        Pending Appointments - Sunrise Dental Clinic
+        Upcoming Appointments - Sunrise Dental Clinic
     </title>
 
     <style>
@@ -147,6 +147,11 @@
             font-weight: bold;
         }
 
+        .confirmed {
+            color: #176b2c;
+            font-weight: bold;
+        }
+
         .action-form {
             display: inline-block;
             margin-right: 5px;
@@ -216,12 +221,12 @@
 <div class="box">
 
     <h1>
-        Pending Assigned Appointments
+        Upcoming Appointments
     </h1>
 
     <p class="subtitle">
-        Review appointments assigned by the administrator
-        and confirm or reject them.
+        View appointments reserved with you. Legacy pending requests
+        can still be confirmed or rejected.
     </p>
 
 
@@ -330,11 +335,18 @@
                     <%= row.get("appointmentTime") %>
                 </td>
 
-                <td class="pending">
+                <td class="<%= "Confirmed".equalsIgnoreCase(
+                        (String) row.get("status"))
+                        ? "confirmed" : "pending" %>">
                     <%= row.get("status") %>
                 </td>
 
                 <td>
+
+                    <%
+                        if ("Pending".equalsIgnoreCase(
+                                (String) row.get("status"))) {
+                    %>
 
                     <form
                         class="action-form"
@@ -387,6 +399,16 @@
 
                     </form>
 
+                    <%
+                        } else {
+                    %>
+
+                        Reserved online
+
+                    <%
+                        }
+                    %>
+
                 </td>
 
             </tr>
@@ -404,7 +426,7 @@
                 <td colspan="8"
                     class="no-data">
 
-                    No pending assigned appointments.
+                    No upcoming appointments.
 
                 </td>
 

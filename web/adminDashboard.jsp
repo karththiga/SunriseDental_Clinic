@@ -306,21 +306,6 @@
             </p>
 
         </a>
-           <a href="${pageContext.request.contextPath}/ManageAppointmentRequestsServlet"
-   class="menu-card">
-
-    <h3>
-        Appointment Requests
-    </h3>
-
-    <p>
-        View patient requests, check dentist
-        availability and assign appointments.
-    </p>
-
-</a>
-
-
     </div>
 
 </div>

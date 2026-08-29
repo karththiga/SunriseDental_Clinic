@@ -342,7 +342,7 @@ public class DentistAppointmentsServlet extends HttpServlet {
 
 
     /*
-     * Load Pending appointments
+     * Load upcoming pending and directly confirmed appointments
      * assigned to this dentist.
      */
     private void loadAssignedAppointments(
@@ -370,8 +370,9 @@ public class DentistAppointmentsServlet extends HttpServlet {
                 + "LEFT JOIN treatments t "
                 + "ON a.treatment_id = t.treatment_id "
                 + "WHERE a.dentist_id = ? "
-                + "AND a.status = 'Pending' "
+                + "AND a.status IN ('Pending', 'Confirmed') "
                 + "AND a.appointment_number IS NOT NULL "
+                + "AND a.appointment_date >= CURRENT_DATE "
                 + "ORDER BY a.appointment_date, "
                 + "a.appointment_time";
 

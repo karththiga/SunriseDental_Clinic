@@ -205,12 +205,12 @@
            class="card">
 
             <h3>
-                Pending Appointments
+                Upcoming Appointments
             </h3>
 
             <p>
-                View assigned appointment requests
-                and confirm or reject them.
+                View confirmed online reservations and
+                respond to legacy pending requests.
             </p>
 
         </a>

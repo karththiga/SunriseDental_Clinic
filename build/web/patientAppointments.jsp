@@ -248,6 +248,10 @@
                     Status
                 </th>
 
+                <th>
+                    Confirmation
+                </th>
+
             </tr>
 
         </thead>
@@ -400,6 +404,23 @@
 
             </td>
 
+            <td>
+                <%
+                    if (row.get("appointmentNumber") != null
+                            && !"Rejected".equalsIgnoreCase(status)) {
+                %>
+                    <a href="${pageContext.request.contextPath}/AppointmentConfirmationServlet?appointmentNumber=<%= row.get("appointmentNumber") %>">
+                        View receipt
+                    </a>
+                <%
+                    } else {
+                %>
+                    —
+                <%
+                    }
+                %>
+            </td>
+
         </tr>
 
 
@@ -412,7 +433,7 @@
 
         <tr>
 
-            <td colspan="6"
+            <td colspan="7"
                 class="no-data">
 
                 You do not have any appointments.

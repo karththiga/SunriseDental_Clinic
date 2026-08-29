@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,7 +49,7 @@ public class HomeServlet extends HttpServlet {
                 getVisitingHours(day)
         );
 
-        loadActiveDentists(request);
+        loadActiveDentists(request, day);
 
         request.getRequestDispatcher("/home.jsp")
                 .forward(request, response);
@@ -66,36 +67,54 @@ public class HomeServlet extends HttpServlet {
         return "9:00 AM - 1:00 PM & 3:00 PM - 7:00 PM";
     }
 
-    private void loadActiveDentists(HttpServletRequest request) {
+    private void loadActiveDentists(
+            HttpServletRequest request,
+            DayOfWeek day) {
         List<Map<String, String>> dentists = new ArrayList<>();
 
         String sql =
-                "SELECT dentist_name, specialization "
+                "SELECT dentist_name, specialization, "
+                + "available_from, available_to "
                 + "FROM dentists "
                 + "WHERE status = 'Active' "
+                + "AND LOWER(available_day) = LOWER(?) "
+                + "AND available_from IS NOT NULL "
+                + "AND available_to IS NOT NULL "
                 + "ORDER BY dentist_name";
 
         try (
             Connection conn = DBConnection.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery()
+            PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
-            while (rs.next()) {
-                Map<String, String> dentist = new HashMap<>();
-                dentist.put(
-                        "name",
-                        escapeHtml(rs.getString("dentist_name"))
-                );
+            stmt.setString(1, day.name());
 
-                String specialization = rs.getString("specialization");
-                dentist.put(
-                        "specialization",
-                        specialization == null || specialization.trim().isEmpty()
-                                ? "General Dentistry"
-                                : escapeHtml(specialization)
-                );
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, String> dentist = new HashMap<>();
+                    dentist.put(
+                            "name",
+                            escapeHtml(rs.getString("dentist_name"))
+                    );
 
-                dentists.add(dentist);
+                    String specialization = rs.getString("specialization");
+                    dentist.put(
+                            "specialization",
+                            specialization == null || specialization.trim().isEmpty()
+                                    ? "General Dentistry"
+                                    : escapeHtml(specialization)
+                    );
+
+                    LocalTime from = rs.getTime("available_from").toLocalTime();
+                    LocalTime to = rs.getTime("available_to").toLocalTime();
+                    DateTimeFormatter timeFormat =
+                            DateTimeFormatter.ofPattern("h:mm a");
+                    dentist.put(
+                            "visitingHours",
+                            from.format(timeFormat) + " - " + to.format(timeFormat)
+                    );
+
+                    dentists.add(dentist);
+                }
             }
         } catch (SQLException e) {
             // The public homepage must remain available even when the

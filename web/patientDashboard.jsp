@@ -187,8 +187,8 @@
         </p>
 
         <p>
-            Request appointments and
-            check your appointment status.
+            Reserve live appointment slots and
+            view your confirmed appointments.
         </p>
 
     </div>
@@ -206,13 +206,12 @@
            class="card">
 
             <h3>
-                Request Appointment
+                Reserve Appointment
             </h3>
 
             <p>
-                Select your treatment,
-                preferred date and time
-                and submit an appointment request.
+                Select a treatment, view live dentist
+                availability and confirm a slot instantly.
             </p>
 
         </a>

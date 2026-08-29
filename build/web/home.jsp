@@ -414,7 +414,7 @@
                                         <h3><%= dentist.get("name") %></h3>
                                         <p><%= dentist.get("specialization") %></p>
                                     </div>
-                                    <div class="doctor-time"><%= request.getAttribute("visitingHours") %></div>
+                                    <div class="doctor-time"><%= dentist.get("visitingHours") %></div>
                                 </article>
                         <%  }
                            } else { %>
