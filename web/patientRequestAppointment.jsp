@@ -94,12 +94,12 @@
     <main class="container">
         <section class="box">
             <h1>Reserve an Appointment</h1>
-            <p class="subtitle">View live availability and confirm your appointment instantly.</p>
+            <p class="subtitle">View live availability, choose a slot and complete payment securely.</p>
 
             <div class="steps">
                 <div class="step active">1. Choose service</div>
                 <div class="step <%= selectedTreatmentId != null ? "active" : "" %>">2. Check availability</div>
-                <div class="step <%= availableSlots != null ? "active" : "" %>">3. Reserve slot</div>
+                <div class="step <%= availableSlots != null ? "active" : "" %>">3. Choose slot</div>
             </div>
 
             <% if (error != null) { %>
@@ -197,7 +197,7 @@
                             </div>
 
                             <button class="button" type="submit">
-                                Reserve and Confirm Appointment
+                                Continue to Payment
                             </button>
                         </form>
                     <% } else { %>
@@ -208,8 +208,8 @@
 
             <div class="note">
                 Available times are updated from current appointment data. Your selected
-                slot is checked again when you reserve it, then confirmed immediately—no
-                administrator approval is required.
+                slot is checked again after dummy payment authorization. The appointment
+                and payment receipt are then created together—no administrator approval is required.
             </div>
         </section>
 

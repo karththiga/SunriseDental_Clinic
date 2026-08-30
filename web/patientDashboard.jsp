@@ -212,16 +212,10 @@
 
             <p>
                 Select a treatment, view live dentist
-                availability and confirm a slot instantly.
+                availability and complete dummy payment.
             </p>
 
         </a>
-
-        <a href="help.jsp" class="card">
-            <h3>Help</h3>
-            <p>View instructions for reservations, confirmations and account access.</p>
-        </a>
-
 
         <a href="${pageContext.request.contextPath}/PatientAppointmentsServlet"
            class="card">
@@ -232,9 +226,14 @@
 
             <p>
                 View your appointment details,
-                assigned dentist and confirmation status.
+                clinic notifications, cancellation status and refunds.
             </p>
 
+        </a>
+
+        <a href="help.jsp" class="card">
+            <h3>Help</h3>
+            <p>View instructions for reservations, confirmations and account access.</p>
         </a>
 
 

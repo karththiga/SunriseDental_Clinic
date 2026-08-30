@@ -40,12 +40,18 @@ public class AppointmentConfirmationServlet extends HttpServlet {
         String sql =
                 "SELECT a.appointment_number, a.patient_name, "
                 + "a.contact_number, a.appointment_date, "
-                + "a.appointment_time, a.status, d.dentist_name, "
+                + "a.appointment_time, a.status, a.cancellation_reason, d.dentist_name, "
                 + "d.specialization, d.consultation_fee, "
-                + "t.treatment_name, t.treatment_cost "
+                + "t.treatment_name, t.treatment_cost AS catalogue_treatment_cost, "
+                + "b.treatment_cost AS paid_treatment_cost, b.hospital_charge, "
+                + "b.total_amount, "
+                + "b.payment_status, b.payment_reference, b.payment_method, "
+                + "b.card_last_four, b.bill_date, b.refund_reference, "
+                + "b.refunded_amount, b.refunded_at "
                 + "FROM appointments a "
                 + "INNER JOIN dentists d ON a.dentist_id = d.dentist_id "
                 + "INNER JOIN treatments t ON a.treatment_id = t.treatment_id "
+                + "LEFT JOIN bills b ON b.appointment_id = a.appointment_id "
                 + "WHERE a.appointment_number = ? AND a.patient_user_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
@@ -72,8 +78,25 @@ public class AppointmentConfirmationServlet extends HttpServlet {
                     request.setAttribute("appointmentDate", rs.getDate("appointment_date"));
                     request.setAttribute("appointmentTime", rs.getTime("appointment_time"));
                     request.setAttribute("status", rs.getString("status"));
-                    request.setAttribute("treatmentCost", rs.getBigDecimal("treatment_cost"));
+                    request.setAttribute("cancellationReason", html(rs.getString("cancellation_reason")));
+                    request.setAttribute("treatmentCost",
+                            rs.getBigDecimal("paid_treatment_cost") == null
+                                    ? rs.getBigDecimal("catalogue_treatment_cost")
+                                    : rs.getBigDecimal("paid_treatment_cost"));
                     request.setAttribute("consultationFee", rs.getBigDecimal("consultation_fee"));
+                    request.setAttribute("hospitalCharge", rs.getBigDecimal("hospital_charge"));
+                    request.setAttribute("totalAmount", rs.getBigDecimal("total_amount"));
+                    request.setAttribute("paymentStatus", rs.getString("payment_status"));
+                    request.setAttribute("paymentReference", rs.getString("payment_reference"));
+                    request.setAttribute("paymentMethod", rs.getString("payment_method"));
+                    request.setAttribute("cardLastFour", rs.getString("card_last_four"));
+                    request.setAttribute("paymentDate", rs.getTimestamp("bill_date"));
+                    request.setAttribute("refundReference", rs.getString("refund_reference"));
+                    request.setAttribute("refundedAmount", rs.getBigDecimal("refunded_amount"));
+                    request.setAttribute("refundedAt", rs.getTimestamp("refunded_at"));
+                    request.setAttribute("refunded", rs.getString("refund_reference") != null);
+                    request.setAttribute("paymentFound",
+                            rs.getString("payment_reference") != null);
                     request.setAttribute("found", true);
                 }
             }
@@ -87,5 +110,12 @@ public class AppointmentConfirmationServlet extends HttpServlet {
 
         request.getRequestDispatcher("/appointmentConfirmation.jsp")
                 .forward(request, response);
+    }
+
+    private String html(String value) {
+        if (value == null) return null;
+        return value.replace("&", "&amp;").replace("<", "&lt;")
+                .replace(">", "&gt;").replace("\"", "&quot;")
+                .replace("'", "&#39;");
     }
 }

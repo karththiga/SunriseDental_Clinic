@@ -32,7 +32,15 @@
         .detail { padding: 14px 0; border-bottom: 1px solid #e6ebf1; }
         .detail small { display: block; color: #738092; margin-bottom: 3px; }
         .detail strong { color: #1e344c; }
-        .cost-note { margin-top: 22px; padding: 15px; color: #526274; background: #f6f8fa; border-radius: 8px; font-size: 13px; }
+        .cost-note { margin-top: 24px; overflow: hidden; border: 1px solid #dce9e8; border-radius: 11px; }
+        .cost-note h2 { margin: 0; padding: 14px 17px; font-size: 19px; background: #f1faf8; }
+        .cost-row { display: flex; justify-content: space-between; gap: 22px; padding: 13px 17px; border-top: 1px solid #dce9e8; }
+        .cost-row span { color: #526274; }
+        .cost-row small { display: block; margin-top: 2px; color: #738092; }
+        .cost-row strong { color: #123047; white-space: nowrap; }
+        .cost-row.total { padding: 18px 17px; color: white; background: #123047; font-size: 21px; }
+        .cost-row.total span, .cost-row.total strong { color: white; }
+        .receipt-note { margin: 10px 17px 14px; color: #607583; font-size: 12px; }
         .actions { display: flex; gap: 12px; margin-top: 27px; }
         .button { flex: 1; padding: 12px; border: 1px solid #176b87; border-radius: 7px; color: white; background: #21a7a0; text-align: center; text-decoration: none; font-weight: bold; cursor: pointer; }
         .button.secondary { color: #176b87; background: white; }
@@ -46,9 +54,9 @@
     <main class="receipt">
         <header class="receipt-head">
             <h1>Sunrise Dental Clinic</h1>
-            <p>Appointment Confirmation Receipt</p>
+            <p>Payment and Appointment Confirmation Receipt</p>
             <% if (Boolean.TRUE.equals(found)) { %>
-                <span class="confirmed">✓ Appointment Confirmed</span>
+                <span class="confirmed">✓ <%= Boolean.TRUE.equals(request.getAttribute("refunded")) ? "Appointment Cancelled · Payment Refunded" : Boolean.TRUE.equals(request.getAttribute("paymentFound")) ? "Payment Received · Appointment Confirmed" : "Appointment Confirmed" %></span>
             <% } %>
         </header>
 
@@ -70,19 +78,47 @@
                     <div class="detail"><small>Status</small><strong><%= request.getAttribute("status") %></strong></div>
                     <div class="detail"><small>Date</small><strong><%= request.getAttribute("appointmentDate") %></strong></div>
                     <div class="detail"><small>Time</small><strong><%= request.getAttribute("appointmentTime") %></strong></div>
+                    <% if (request.getAttribute("cancellationReason") != null) { %><div class="detail"><small>Cancellation reason</small><strong><%= request.getAttribute("cancellationReason") %></strong></div><% } %>
+                    <% if (Boolean.TRUE.equals(request.getAttribute("paymentFound"))) { %>
+                        <div class="detail"><small>Payment reference</small><strong><%= request.getAttribute("paymentReference") %></strong></div>
+                        <div class="detail"><small>Payment status</small><strong><%= request.getAttribute("paymentStatus") %></strong></div>
+                        <div class="detail"><small>Payment method</small><strong><%= request.getAttribute("paymentMethod") %> ending <%= request.getAttribute("cardLastFour") %></strong></div>
+                        <div class="detail"><small>Paid at</small><strong><%= request.getAttribute("paymentDate") %></strong></div>
+                        <% if (Boolean.TRUE.equals(request.getAttribute("refunded"))) { %>
+                            <div class="detail"><small>Refund reference</small><strong><%= request.getAttribute("refundReference") %></strong></div>
+                            <div class="detail"><small>Refunded at</small><strong><%= request.getAttribute("refundedAt") %></strong></div>
+                        <% } %>
+                    <% } %>
                 </div>
 
                 <div class="cost-note">
-                    Estimated treatment cost: Rs. <%= request.getAttribute("treatmentCost") %> ·
-                    Consultation fee: Rs. <%= request.getAttribute("consultationFee") %>.
-                    This is an appointment confirmation, not a payment receipt.
+                    <h2>Payment Breakdown</h2>
+                    <% if (Boolean.TRUE.equals(request.getAttribute("paymentFound"))) { %>
+                        <div class="cost-row">
+                            <span>Treatment charge<small>Doctor and equipment charges included</small></span>
+                            <strong>Rs. <%= request.getAttribute("treatmentCost") %></strong>
+                        </div>
+                        <div class="cost-row">
+                            <span>Hospital charges</span>
+                            <strong>Rs. <%= request.getAttribute("hospitalCharge") %></strong>
+                        </div>
+                        <div class="cost-row total">
+                            <span><%= Boolean.TRUE.equals(request.getAttribute("refunded")) ? "Total Refunded" : "Total Paid" %></span>
+                            <strong>Rs. <%= Boolean.TRUE.equals(request.getAttribute("refunded")) ? request.getAttribute("refundedAmount") : request.getAttribute("totalAmount") %></strong>
+                        </div>
+                        <p class="receipt-note"><%= Boolean.TRUE.equals(request.getAttribute("refunded")) ? "This document confirms the appointment cancellation and full simulated refund." : "This document is your payment and appointment confirmation receipt." %></p>
+                    <% } else { %>
+                        <div class="cost-row"><span>Treatment charge</span><strong>Rs. <%= request.getAttribute("treatmentCost") %></strong></div>
+                        <div class="cost-row"><span>Consultation fee</span><strong>Rs. <%= request.getAttribute("consultationFee") %></strong></div>
+                        <p class="receipt-note">This legacy appointment does not have an online-payment receipt.</p>
+                    <% } %>
                 </div>
             <% } %>
 
             <div class="actions">
                 <a class="button secondary" href="${pageContext.request.contextPath}/PatientAppointmentsServlet">My appointments</a>
                 <% if (Boolean.TRUE.equals(found)) { %>
-                    <button class="button" type="button" onclick="window.print()">Print confirmation</button>
+                    <button class="button" type="button" onclick="window.print()">Print receipt</button>
                 <% } %>
             </div>
         </section>

@@ -8,7 +8,7 @@ A Jakarta Servlet/JSP and MariaDB appointment, patient, schedule, and billing sy
 - Patient signup/login, direct slot reservation, confirmation receipts, and appointment history
 - Role-based Admin, Dentist, Cashier, and Patient dashboards
 - Salted PBKDF2 password storage with transparent legacy-account migration
-- Global appointment search and appointment update/undo
+- Global appointment search, update/undo, admin cancellation and simulated refunds
 - Unified people management with transactional dentist creation
 - Treatment catalogue management
 - Billing through Facade and Decorator patterns
@@ -18,7 +18,7 @@ A Jakarta Servlet/JSP and MariaDB appointment, patient, schedule, and billing sy
 
 ## Database
 
-Import `db/sunrise_dental.sql`, then apply `db/advanced_features.sql` for database-level double-booking triggers. The optional `db/reporting_procedure.sql` adds the daily report stored procedure; older upgraded MariaDB installations may require `mariadb-upgrade` first. Connection settings are currently in `src/java/DBConnection.java`.
+For a new installation, import `db/sunrise_dental.sql`. For an existing database, apply `db/payment_features.sql` and then `db/appointment_cancellation_features.sql`. The cancellation migration adds refund audit fields and persistent patient notifications and is safe to run more than once. Connection settings are currently in `src/java/DBConnection.java`.
 
 ## Automated tests
 

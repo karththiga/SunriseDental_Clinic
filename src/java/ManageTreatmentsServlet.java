@@ -34,6 +34,8 @@ public class ManageTreatmentsServlet extends HttpServlet {
         }
         if ("saved".equals(request.getParameter("success"))) {
             request.setAttribute("success", "Treatment saved successfully.");
+        } else if ("deleted".equals(request.getParameter("success"))) {
+            request.setAttribute("success", "Treatment deleted successfully.");
         }
         loadTreatments(request);
         request.getRequestDispatcher("/manageTreatments.jsp").forward(request, response);
@@ -44,6 +46,18 @@ public class ManageTreatmentsServlet extends HttpServlet {
             throws ServletException, IOException {
         if (!isAdmin(request.getSession(false))) {
             response.sendRedirect("login.jsp");
+            return;
+        }
+
+        if ("delete".equals(request.getParameter("action"))) {
+            String deleteError = deleteTreatment(request.getParameter("treatmentId"));
+            if (deleteError == null) {
+                response.sendRedirect("ManageTreatmentsServlet?success=deleted");
+                return;
+            }
+            request.setAttribute("error", deleteError);
+            loadTreatments(request);
+            request.getRequestDispatcher("/manageTreatments.jsp").forward(request, response);
             return;
         }
 
@@ -127,6 +141,42 @@ public class ManageTreatmentsServlet extends HttpServlet {
         } catch (NumberFormatException | SQLException e) {
             request.setAttribute("error", "Unable to load the selected treatment.");
         }
+    }
+
+    /**
+     * Preserves historical appointment and billing records by allowing hard
+     * deletion only when a treatment has never been used by an appointment.
+     */
+    private String deleteTreatment(String idValue) {
+        int id;
+        try {
+            id = Integer.parseInt(idValue);
+        } catch (NumberFormatException | NullPointerException e) {
+            return "Invalid treatment identifier.";
+        }
+
+        try (Connection conn = DBConnection.getConnection()) {
+            try (PreparedStatement used = conn.prepareStatement(
+                    "SELECT 1 FROM appointments WHERE treatment_id=? LIMIT 1")) {
+                used.setInt(1, id);
+                try (ResultSet rs = used.executeQuery()) {
+                    if (rs.next()) {
+                        return "This treatment has appointment history and cannot be deleted. Update its name or price instead.";
+                    }
+                }
+            }
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "DELETE FROM treatments WHERE treatment_id=?")) {
+                stmt.setInt(1, id);
+                if (stmt.executeUpdate() == 0) {
+                    return "The selected treatment no longer exists.";
+                }
+            }
+        } catch (SQLException e) {
+            getServletContext().log("Unable to delete treatment.", e);
+            return "Unable to delete the treatment. Please try again.";
+        }
+        return null;
     }
 
     private void loadTreatments(HttpServletRequest request) {

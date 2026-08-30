@@ -23,6 +23,9 @@
     List<Map<String, Object>> appointments =
             (List<Map<String, Object>>)
             request.getAttribute("appointments");
+
+    List<Map<String, Object>> notifications =
+            (List<Map<String, Object>>) request.getAttribute("notifications");
 %>
 
 <!DOCTYPE html>
@@ -148,6 +151,17 @@
             color: #b00020;
         }
 
+        .cancelled { color: #9d2638; }
+        .notifications { margin-bottom: 25px; }
+        .notifications h2 { margin: 0 0 12px; }
+        .notice { margin-bottom: 10px; padding: 14px 16px; background: #f4fbf9; border: 1px solid #cfe5e1; border-left: 4px solid #21a7a0; border-radius: 9px; }
+        .notice.unread { background: #e8f8f2; }
+        .notice-head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 5px; }
+        .notice-head strong { color: #123047; }
+        .notice-head time { color: #607583; font-size: 12px; }
+        .notice p { margin: 0; line-height: 1.5; }
+        .refund-info { margin-top: 5px; color: #176454; font-size: 13px; font-weight: bold; }
+
         .no-data {
             text-align: center;
             color: #666;
@@ -215,6 +229,19 @@
     <%
         }
     %>
+
+
+    <% if (notifications != null && !notifications.isEmpty()) { %>
+    <section class="notifications" aria-label="Patient notifications">
+        <h2>Clinic Notifications</h2>
+        <% for (Map<String, Object> notice : notifications) { %>
+        <article class="notice <%= Boolean.FALSE.equals(notice.get("read")) ? "unread" : "" %>">
+            <div class="notice-head"><strong><%= notice.get("title") %></strong><time><%= notice.get("createdAt") %></time></div>
+            <p><%= notice.get("message") %></p>
+        </article>
+        <% } %>
+    </section>
+    <% } %>
 
 
     <div class="table-container">
@@ -285,6 +312,9 @@
                     } else if ("Rejected".equalsIgnoreCase(status)) {
 
                         statusClass = "rejected";
+                    } else if ("Cancelled".equalsIgnoreCase(status)) {
+
+                        statusClass = "cancelled";
                     }
         %>
 
@@ -400,6 +430,17 @@
                     </small>
 
                 <%
+                    } else if ("Cancelled".equalsIgnoreCase(status)) {
+                %>
+
+                    <br><small><%= row.get("cancellationReason") == null
+                            ? "Cancelled by the clinic"
+                            : row.get("cancellationReason") %></small>
+                    <% if (row.get("refundedAmount") != null) { %>
+                        <div class="refund-info">Refunded LKR <%= row.get("refundedAmount") %><br><%= row.get("refundReference") %></div>
+                    <% } %>
+
+                <%
                     }
                 %>
 
@@ -411,7 +452,7 @@
                             && !"Rejected".equalsIgnoreCase(status)) {
                 %>
                     <a href="${pageContext.request.contextPath}/AppointmentConfirmationServlet?appointmentNumber=<%= row.get("appointmentNumber") %>">
-                        View receipt
+                        <%= "Cancelled".equalsIgnoreCase(status) ? "View refund receipt" : "View receipt" %>
                     </a>
                 <%
                     } else {

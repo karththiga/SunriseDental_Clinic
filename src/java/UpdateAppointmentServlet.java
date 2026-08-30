@@ -92,6 +92,14 @@ public class UpdateAppointmentServlet extends HttpServlet {
             return;
         }
 
+        if ("Cancelled".equalsIgnoreCase(status)) {
+            request.setAttribute("error",
+                    "Use Cancel from Manage Appointments so any payment is refunded and the patient is notified.");
+            reloadAppointment(appointmentNumber, request);
+            forwardForm(request, response);
+            return;
+        }
+
         try {
             LocalDate date = LocalDate.parse(appointmentDate);
             LocalTime time = LocalTime.parse(appointmentTime);

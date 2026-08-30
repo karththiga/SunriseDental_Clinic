@@ -15,6 +15,8 @@ javac -d "$output_dir" \
   "$project_dir/src/java/ChargeDecorator.java" \
   "$project_dir/src/java/ConsultationFeeDecorator.java" \
   "$project_dir/src/java/PasswordUtil.java" \
+  "$project_dir/src/java/DummyPaymentGateway.java" \
+  "$project_dir/src/java/PaymentSummary.java" \
   "$project_dir/src/java/DBConnection.java" \
   "$project_dir/src/java/ScheduleEntry.java" \
   "$project_dir/src/java/ClinicScheduleRepository.java" \

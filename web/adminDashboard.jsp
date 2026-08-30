@@ -227,8 +227,8 @@
             </h3>
 
             <p>
-                Manage user accounts, dentist profiles,
-                schedules and treatment assignments.
+                Create, view, update and delete user accounts,
+                dentist profiles and treatment assignments.
             </p>
 
         </a>
@@ -242,7 +242,7 @@
             </h3>
 
             <p>
-                Add and update treatment
+                Create, view, update and delete treatment
                 names and treatment costs.
             </p>
 

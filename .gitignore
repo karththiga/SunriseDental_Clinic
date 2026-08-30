@@ -1,7 +1,7 @@
 /dist/
 /build/web/
-/db
 /doc
 /out
 /docs
 /nbproject/private/
+/db

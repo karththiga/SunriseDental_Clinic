@@ -49,6 +49,7 @@ public class PatientAppointmentsServlet extends HttpServlet {
                     userId,
                     request
             );
+            loadNotifications(userId, request);
 
         } catch (SQLException e) {
 
@@ -84,14 +85,16 @@ public class PatientAppointmentsServlet extends HttpServlet {
                 + "a.appointment_number, "
                 + "a.appointment_date, "
                 + "a.appointment_time, "
-                + "a.status, "
+                + "a.status, a.cancellation_reason, "
                 + "t.treatment_name, "
-                + "d.dentist_name "
+                + "d.dentist_name, b.payment_status, "
+                + "b.refunded_amount, b.refund_reference "
                 + "FROM appointments a "
                 + "LEFT JOIN treatments t "
                 + "ON a.treatment_id = t.treatment_id "
                 + "LEFT JOIN dentists d "
                 + "ON a.dentist_id = d.dentist_id "
+                + "LEFT JOIN bills b ON a.appointment_id=b.appointment_id "
                 + "WHERE a.patient_user_id = ? "
                 + "ORDER BY a.appointment_date DESC, "
                 + "a.appointment_time DESC";
@@ -155,6 +158,11 @@ public class PatientAppointmentsServlet extends HttpServlet {
                         rs.getString("dentist_name")
                 );
 
+                row.put("cancellationReason", html(rs.getString("cancellation_reason")));
+                row.put("paymentStatus", rs.getString("payment_status"));
+                row.put("refundedAmount", rs.getBigDecimal("refunded_amount"));
+                row.put("refundReference", html(rs.getString("refund_reference")));
+
 
                 appointments.add(row);
             }
@@ -165,5 +173,43 @@ public class PatientAppointmentsServlet extends HttpServlet {
                 "appointments",
                 appointments
         );
+    }
+
+    /** Loads persistent in-app messages created by clinic administration. */
+    private void loadNotifications(int userId, HttpServletRequest request)
+            throws SQLException {
+        List<Map<String, Object>> notifications = new ArrayList<>();
+        String sql = "SELECT notification_id,title,message,is_read,created_at "
+                + "FROM patient_notifications WHERE recipient_user_id=? "
+                + "ORDER BY created_at DESC,notification_id DESC LIMIT 20";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("id", rs.getInt("notification_id"));
+                    row.put("title", html(rs.getString("title")));
+                    row.put("message", html(rs.getString("message")));
+                    row.put("read", rs.getBoolean("is_read"));
+                    row.put("createdAt", rs.getTimestamp("created_at"));
+                    notifications.add(row);
+                }
+            }
+            try (PreparedStatement read = conn.prepareStatement(
+                    "UPDATE patient_notifications SET is_read=1 "
+                    + "WHERE recipient_user_id=? AND is_read=0")) {
+                read.setInt(1, userId);
+                read.executeUpdate();
+            }
+        }
+        request.setAttribute("notifications", notifications);
+    }
+
+    private String html(String value) {
+        if (value == null) return "";
+        return value.replace("&", "&amp;").replace("<", "&lt;")
+                .replace(">", "&gt;").replace("\"", "&quot;")
+                .replace("'", "&#39;");
     }
 }

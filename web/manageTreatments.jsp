@@ -50,7 +50,10 @@
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 13px; text-align: left; }
         td { border-bottom: 1px solid #dce9e8; }
+        .row-actions { display: flex; align-items: center; gap: 8px; }
+        .inline-form { display: inline; margin: 0; }
         .edit-link { display: inline-flex; padding: 7px 12px; color: white !important; background: #21a7a0; border-radius: 8px; text-decoration: none; font-weight: bold; }
+        .delete-button { min-height: auto; padding: 7px 12px; color: #9d2638; background: #ffeaed; border-radius: 8px; }
         .no-data { padding: 30px; color: #607583; text-align: center; }
         .back-link { display: block; margin-top: 23px; text-align: center; text-decoration: none; font-weight: bold; }
         @media (max-width: 700px) { .box { padding: 22px 16px; } .form-grid { grid-template-columns: 1fr; } }
@@ -88,7 +91,7 @@
                     <tbody>
                     <% if (treatments != null && !treatments.isEmpty()) {
                            for (Map<String, Object> item : treatments) { %>
-                        <tr><td><%= item.get("id") %></td><td><%= item.get("name") %></td><td>LKR <%= item.get("cost") %></td><td><a class="edit-link" href="${pageContext.request.contextPath}/ManageTreatmentsServlet?edit=<%= item.get("id") %>">Edit</a></td></tr>
+                        <tr><td><%= item.get("id") %></td><td><%= item.get("name") %></td><td>LKR <%= item.get("cost") %></td><td><div class="row-actions"><a class="edit-link" href="${pageContext.request.contextPath}/ManageTreatmentsServlet?edit=<%= item.get("id") %>">Edit</a><form class="inline-form" action="${pageContext.request.contextPath}/ManageTreatmentsServlet" method="post" onsubmit="return confirm('Delete this treatment?');"><input type="hidden" name="action" value="delete"><input type="hidden" name="treatmentId" value="<%= item.get("id") %>"><button class="delete-button" type="submit">Delete</button></form></div></td></tr>
                     <%     }
                        } else { %><tr><td colspan="4" class="no-data">No treatments are configured.</td></tr><% } %>
                     </tbody>

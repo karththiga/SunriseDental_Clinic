@@ -33,6 +33,13 @@ public class ManageAppointmentsServlet extends HttpServlet {
         String query = request.getParameter("query");
         query = query == null ? "" : query.trim();
 
+        Object success = session.getAttribute("appointmentCancellationMessage");
+        Object cancellationError = session.getAttribute("appointmentCancellationError");
+        if (success != null) request.setAttribute("success", success.toString());
+        if (cancellationError != null) request.setAttribute("error", cancellationError.toString());
+        session.removeAttribute("appointmentCancellationMessage");
+        session.removeAttribute("appointmentCancellationError");
+
         request.setAttribute("query", escapeHtml(query));
         loadAppointments(query, request);
 
@@ -55,11 +62,13 @@ public class ManageAppointmentsServlet extends HttpServlet {
         String sql =
                 "SELECT a.appointment_id, a.appointment_number, "
                 + "a.patient_name, a.contact_number, a.appointment_date, "
-                + "a.appointment_time, a.status, d.dentist_name, "
-                + "t.treatment_name "
+                + "a.appointment_time, a.status, a.cancellation_reason, "
+                + "d.dentist_name, t.treatment_name, b.payment_status, "
+                + "b.total_amount, b.refund_reference, b.refunded_amount "
                 + "FROM appointments a "
                 + "LEFT JOIN dentists d ON a.dentist_id=d.dentist_id "
                 + "LEFT JOIN treatments t ON a.treatment_id=t.treatment_id "
+                + "LEFT JOIN bills b ON a.appointment_id=b.appointment_id "
                 + (searching
                     ? "WHERE a.appointment_number LIKE ? "
                       + "OR a.contact_number LIKE ? "
@@ -90,6 +99,11 @@ public class ManageAppointmentsServlet extends HttpServlet {
                     row.put("appointmentDate", rs.getDate("appointment_date"));
                     row.put("appointmentTime", rs.getTime("appointment_time"));
                     row.put("status", safe(rs.getString("status")));
+                    row.put("cancellationReason", escapeHtml(rs.getString("cancellation_reason")));
+                    row.put("paymentStatus", safe(rs.getString("payment_status")));
+                    row.put("totalAmount", rs.getBigDecimal("total_amount"));
+                    row.put("refundReference", escapeHtml(rs.getString("refund_reference")));
+                    row.put("refundedAmount", rs.getBigDecimal("refunded_amount"));
                     appointments.add(row);
                 }
             }

@@ -11,6 +11,7 @@
     }
 
     String error = (String) request.getAttribute("error");
+    String success = (String) request.getAttribute("success");
     String query = (String) request.getAttribute("query");
     Boolean searching = (Boolean) request.getAttribute("searching");
     List<Map<String, Object>> appointments =
@@ -43,7 +44,7 @@
         .list-summary h2 { margin: 0; font-size: 23px; }
         .count { color: #607583; font-size: 14px; }
         .table-container { overflow-x: auto; border: 1px solid #dce9e8; border-radius: 13px; }
-        table { width: 100%; min-width: 980px; border-collapse: collapse; }
+        table { width: 100%; min-width: 1260px; border-collapse: collapse; }
         th, td { padding: 13px 12px; text-align: left; }
         td { border-bottom: 1px solid #dce9e8; }
         tbody tr:last-child td { border-bottom: 0; }
@@ -53,6 +54,16 @@
         .status.pending { color: #8a6100; background: #fff5d8; }
         .edit-link { width: 38px; height: 38px; display: inline-grid; place-items: center; color: white !important; background: #21a7a0; border-radius: 9px; text-decoration: none; font-size: 18px; }
         .edit-link:hover { background: #123047; }
+        .action-cell { min-width: 175px; }
+        .row-actions { display: flex; align-items: flex-start; gap: 8px; }
+        .cancel-details summary { display: inline-flex; min-height: 38px; align-items: center; padding: 0 11px; color: #9d2638; background: #ffeaed; border-radius: 9px; font-weight: bold; cursor: pointer; list-style: none; }
+        .cancel-details summary::-webkit-details-marker { display: none; }
+        .cancel-form { width: 260px; margin-top: 8px; padding: 12px; background: #fff; border: 1px solid #f0bdc4; border-radius: 10px; box-shadow: 0 8px 22px rgba(18,48,71,.12); }
+        .cancel-form label { display: block; margin-bottom: 6px; color: #123047; font-size: 13px; font-weight: bold; }
+        .cancel-form textarea { width: 100%; min-height: 72px; padding: 8px; border: 1px solid #bfd3d3; resize: vertical; }
+        .cancel-form button { width: 100%; min-height: 38px; margin-top: 8px; border: 0; color: white; background: #9d2638; font-weight: bold; cursor: pointer; }
+        .payment { font-size: 12px; line-height: 1.45; }
+        .refund { color: #176454; font-weight: bold; }
         .no-data { padding: 38px; color: #607583; text-align: center; }
         .back-link { display: block; margin-top: 24px; text-align: center; text-decoration: none; font-weight: bold; }
         @media (max-width: 700px) {
@@ -92,6 +103,9 @@
             <% if (error != null) { %>
                 <div class="message error"><%= error %></div>
             <% } %>
+            <% if (success != null) { %>
+                <div class="message success"><%= success %></div>
+            <% } %>
 
             <div class="list-summary">
                 <h2><%= Boolean.TRUE.equals(searching) ? "Search Results" : "All Appointments" %></h2>
@@ -110,7 +124,8 @@
                             <th>Date</th>
                             <th>Time</th>
                             <th>Status</th>
-                            <th>Edit</th>
+                            <th>Payment</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -127,17 +142,26 @@
                                 <td><%= row.get("appointmentDate") %></td>
                                 <td><%= row.get("appointmentTime") %></td>
                                 <td><span class="status <%= statusClass %>"><%= status %></span></td>
-                                <td>
+                                <td class="payment">
+                                    <%= row.get("paymentStatus") %>
+                                    <% if (row.get("refundedAmount") != null) { %><br><span class="refund">LKR <%= row.get("refundedAmount") %> refunded</span><br><%= row.get("refundReference") %><% } %>
+                                    <% if ("Cancelled".equalsIgnoreCase(status) && row.get("cancellationReason") != null) { %><br>Reason: <%= row.get("cancellationReason") %><% } %>
+                                </td>
+                                <td class="action-cell"><div class="row-actions">
+                                    <% if (!"Cancelled".equalsIgnoreCase(status) && !"Completed".equalsIgnoreCase(status) && !"Rejected".equalsIgnoreCase(status)) { %>
                                     <a class="edit-link"
                                        href="${pageContext.request.contextPath}/UpdateAppointmentServlet?appointmentNumber=<%= row.get("appointmentNumber") %>"
                                        title="Edit appointment <%= row.get("appointmentNumber") %>"
                                        aria-label="Edit appointment <%= row.get("appointmentNumber") %>">✎</a>
-                                </td>
+                                    <% if ("Admin".equalsIgnoreCase(role)) { %>
+                                    <details class="cancel-details"><summary>Cancel</summary><form class="cancel-form" action="${pageContext.request.contextPath}/CancelAppointmentServlet" method="post" onsubmit="return confirm('Cancel this appointment and refund any paid bill?');"><input type="hidden" name="appointmentId" value="<%= row.get("appointmentId") %>"><label for="reason-<%= row.get("appointmentId") %>">Cancellation reason</label><textarea id="reason-<%= row.get("appointmentId") %>" name="reason" minlength="5" maxlength="255" required></textarea><button type="submit">Confirm Cancellation</button></form></details>
+                                    <% } } %>
+                                </div></td>
                             </tr>
                         <%  }
                            } else { %>
                             <tr>
-                                <td colspan="9" class="no-data">
+                                <td colspan="10" class="no-data">
                                     <%= Boolean.TRUE.equals(searching)
                                             ? "No appointments match your search."
                                             : "No appointments are available." %>
