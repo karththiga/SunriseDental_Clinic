@@ -35,6 +35,10 @@
         .box { padding: 32px; background: white; }
         h1 { margin: 0 0 6px; }
         .subtitle { margin: 0 0 26px; }
+        .page-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 22px; margin-bottom: 26px; }
+        .page-heading .subtitle { margin: 5px 0 0; }
+        .reserve-link { display: inline-flex; min-height: 46px; padding: 0 18px; align-items: center; justify-content: center; color: white !important; background: #21a7a0; border-radius: 9px; text-decoration: none; font-weight: bold; white-space: nowrap; }
+        .reserve-link:hover { background: #123047; }
         .search-form { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; margin-bottom: 25px; }
         .search-form input { min-width: 0; padding: 13px; border: 1px solid #bfd3d3; font-size: 15px; }
         .search-form button, .clear-link { min-height: 46px; padding: 0 20px; border: 0; border-radius: 9px; font-size: 14px; font-weight: bold; }
@@ -71,6 +75,8 @@
             .search-form { grid-template-columns: 1fr; }
             .clear-link { justify-content: center; }
             .list-summary { align-items: flex-start; flex-direction: column; gap: 3px; }
+            .page-heading { flex-direction: column; }
+            .reserve-link { width: 100%; }
         }
     </style>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/clinic-theme.css">
@@ -78,14 +84,16 @@
 
 <body>
     <header class="navbar">
-        <div class="navbar-title">Sunrise Dental Clinic | Admin</div>
+        <div class="navbar-title">Sunrise Dental Clinic | <%= role %></div>
         <a href="<%= "Admin".equalsIgnoreCase(role) ? "adminDashboard.jsp" : "dashboard.jsp" %>">Dashboard</a>
     </header>
 
     <main class="container">
         <section class="box">
-            <h1>Manage Appointments</h1>
-            <p class="subtitle">Search by appointment number, patient phone number or patient name.</p>
+            <div class="page-heading">
+                <div><h1>Manage Appointments</h1><p class="subtitle">Search, review and maintain appointments from one workspace.</p></div>
+                <a class="reserve-link" href="${pageContext.request.contextPath}/AppointmentServlet">+ Reserve Phone / Walk-in Appointment</a>
+            </div>
 
             <form class="search-form"
                   action="${pageContext.request.contextPath}/ManageAppointmentsServlet"
@@ -107,7 +115,7 @@
                 <div class="message success"><%= success %></div>
             <% } %>
 
-            <div class="list-summary">
+            <div id="appointment-results" class="list-summary ux-focus-target" tabindex="-1">
                 <h2><%= Boolean.TRUE.equals(searching) ? "Search Results" : "All Appointments" %></h2>
                 <span class="count"><%= appointments == null ? 0 : appointments.size() %> appointment(s)</span>
             </div>
@@ -175,5 +183,9 @@
 
             <a class="back-link" href="<%= "Admin".equalsIgnoreCase(role) ? "adminDashboard.jsp" : "dashboard.jsp" %>">← Back to Dashboard</a>
     </main>
+    <script src="${pageContext.request.contextPath}/js/clinic-ux.js"></script>
+    <% if (Boolean.TRUE.equals(searching)) { %>
+    <script>window.addEventListener("DOMContentLoaded", function () { clinicFocusSection("appointment-results"); });</script>
+    <% } %>
 </body>
 </html>

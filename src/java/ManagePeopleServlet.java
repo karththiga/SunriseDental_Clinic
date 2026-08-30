@@ -179,6 +179,7 @@ public class ManagePeopleServlet extends HttpServlet {
                         clear.setInt(1, dentistId); clear.executeUpdate();
                     }
                 }
+                upsertPrimaryAvailability(conn, dentistId, dentist);
                 insertTreatmentAssignments(conn, dentistId, dentist.treatmentIds);
                 conn.commit();
             } catch (SQLException | RuntimeException e) {
@@ -420,6 +421,17 @@ public class ManagePeopleServlet extends HttpServlet {
             stmt.setString(1, d.name); stmt.setString(2, d.specialization); stmt.setString(3, d.qualification);
             stmt.setBigDecimal(4, d.fee); stmt.setString(5, d.day); stmt.setString(6, d.from); stmt.setString(7, d.to);
             stmt.setString(8, d.status); stmt.setInt(9, dentistId); stmt.executeUpdate();
+        }
+    }
+
+    /** Keeps the admin's primary weekday editor in sync with multi-day availability. */
+    private void upsertPrimaryAvailability(Connection conn, int dentistId, DentistForm d) throws SQLException {
+        String sql = "INSERT INTO dentist_availability (dentist_id,day_of_week,available_from,available_to,is_active) "
+                + "VALUES (?,?,?,?,1) ON DUPLICATE KEY UPDATE available_from=VALUES(available_from),"
+                + "available_to=VALUES(available_to),is_active=1";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, dentistId); stmt.setString(2, d.day.toUpperCase());
+            stmt.setString(3, d.from); stmt.setString(4, d.to); stmt.executeUpdate();
         }
     }
 

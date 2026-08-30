@@ -53,14 +53,14 @@
         <h1><%= helpTitle %></h1><p class="subtitle">Instructions for the functions available to your <%= role %> account.</p>
         <div class="steps">
             <% if (adminHelp) { %>
-                <article class="step"><h2>Reserve phone or walk-in appointments</h2><p>Open Reserve Appointment, choose a live dentist slot and save it without payment. The reservation is Confirmed with an Unpaid payment status; direct the patient to the cashier for payment and the official receipt.</p></article>
+                <article class="step"><h2>Reserve phone or walk-in appointments</h2><p>Open Manage Appointments and select Reserve Phone / Walk-in Appointment. Only active visiting dates without announced doctor leave are selectable. Save without payment and direct the patient to the cashier.</p></article>
                 <article class="step"><h2>Manage people</h2><p>Open Manage People to create, view, edit or delete user accounts and dentist profiles. Dentist editing also maintains login details, visiting hours, status and treatment assignments together.</p></article>
                 <article class="step"><h2>Manage treatments</h2><p>Create, view, edit or delete treatment names and prices. Records already used by appointments are protected so historical clinic data remains accurate.</p></article>
                 <article class="step"><h2>Manage appointments</h2><p>Open Manage Appointments to search or edit records. Use Cancel to provide a reason, refund a paid bill automatically and notify the registered patient. Undo remains available for ordinary appointment edits.</p></article>
                 <article class="step"><h2>Review clinic reports</h2><p>Open Reports to review appointment totals, upcoming dentist workload, treatment demand and collected revenue. Use Print Report when a paper or PDF copy is required.</p></article>
                 <article class="step"><h2>Exit the administration system</h2><p>Select Logout after completing administration work. This invalidates the active session and returns to the public clinic home page.</p></article>
             <% } else if (staffHelp) { %>
-                <article class="step"><h2>Register an appointment</h2><p>Open New Appointment, enter the patient and appointment information, validate the selected dentist and treatment, then save the record.</p></article>
+                <article class="step"><h2>Register an appointment</h2><p>Open Manage Appointments and select Reserve Phone / Walk-in Appointment. Choose from the doctor's eligible dates and live slots, then save the unpaid record.</p></article>
                 <article class="step"><h2>View and search appointments</h2><p>Use View Appointments for the complete list. Use Search Appointment when an appointment number is available, or use the management search to locate a patient by number, phone or name.</p></article>
                 <article class="step"><h2>Update an appointment</h2><p>Open the selected appointment, change only the required values and save. Use the restore option if the latest update must be undone.</p></article>
                 <article class="step"><h2>Payment responsibility</h2><p>New phone or walk-in reservations remain Unpaid. Direct patients to the cashier because staff accounts cannot collect payment or print official receipts. Reports remain available for operational review.</p></article>
@@ -72,16 +72,19 @@
                 <article class="step"><h2>Exit cashier access</h2><p>Select Logout immediately after completing cashier work. Never leave a billing session open on a shared terminal.</p></article>
             <% } else if (dentistHelp) { %>
                 <article class="step"><h2>View assigned appointments</h2><p>Open Upcoming Appointments to see pending and confirmed bookings assigned to your dentist account, including patient, treatment, date and time details.</p></article>
+                <article class="step"><h2>Maintain availability</h2><p>Open My Availability to add or update recurring visiting hours for each weekday. Removing a weekday immediately removes those dates from new reservation choices.</p></article>
+                <article class="step"><h2>Announce leave</h2><p>Add a future leave date and reason under My Availability. The date is blocked from new bookings, and patients with existing appointments plus clinic administration receive notifications.</p></article>
                 <article class="step"><h2>Handle legacy pending requests</h2><p>For a Pending request, select Confirm to accept it or Reject to decline it. Check the appointment details before choosing an action because the status is updated immediately.</p></article>
                 <article class="step"><h2>Review online reservations</h2><p>Appointments marked Confirmed were reserved and paid online. They are shown for your schedule and do not require another approval.</p></article>
                 <article class="step"><h2>Exit dentist access</h2><p>Select Logout when you finish reviewing the schedule so patient information is not left visible.</p></article>
             <% } else if (patientHelp) { %>
-                <article class="step"><h2>Reserve an appointment</h2><p>Open Reserve Appointment, choose a treatment, select a dentist and visiting date, then choose one of the live available time slots.</p></article>
+                <article class="step"><h2>Reserve an appointment</h2><p>Open Reserve Appointment and choose a treatment and dentist. The date calendar shows only active visiting weekdays and automatically removes announced leave dates; choose a date and live time slot.</p></article>
                 <article class="step"><h2>Review charges and pay</h2><p>Continue to Card Payment. Review the treatment charge, constant hospital charge and total payable, then enter the card details and confirm payment. Card numbers and CVV values are not stored.</p></article>
                 <article class="step"><h2>Review payment confirmation</h2><p>After successful online payment, note the appointment and payment reference numbers. The cashier can search the paid appointment and provide the official printed receipt at the clinic counter.</p></article>
                 <article class="step"><h2>View your appointments</h2><p>Open My Appointments to review clinic notifications and booking details. A clinic cancellation shows its reason and, when paid, the refunded amount and refund reference.</p></article>
                 <article class="step"><h2>Exit patient access</h2><p>Select Logout when finished, particularly when using a shared device.</p></article>
             <% } %>
+            <article class="step"><h2>Review notifications</h2><p>Open Notifications from your dashboard to review appointment, availability, leave, cancellation or payment information relevant to your account type.</p></article>
         </div>
         <div class="note"><strong>Need assistance?</strong> Contact the system administrator if an available function fails or displays information you do not expect.</div>
         <a class="back-link" href="<%= dashboard %>">← Back to Dashboard</a>

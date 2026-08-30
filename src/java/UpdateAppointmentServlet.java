@@ -174,17 +174,20 @@ public class UpdateAppointmentServlet extends HttpServlet {
             throws SQLException {
 
         String dentistSql =
-                "SELECT d.dentist_name, d.available_day, "
-                + "d.available_from, d.available_to "
+                "SELECT d.dentist_name, da.day_of_week, "
+                + "da.available_from, da.available_to "
                 + "FROM dentists d INNER JOIN dentist_treatments dt "
                 + "ON d.dentist_id = dt.dentist_id "
+                + "INNER JOIN dentist_availability da ON da.dentist_id=d.dentist_id AND da.day_of_week=? AND da.is_active=1 "
                 + "WHERE d.dentist_id=? AND dt.treatment_id=? "
-                + "AND d.status='Active'";
+                + "AND d.status='Active' AND NOT EXISTS (SELECT 1 FROM dentist_leaves dl WHERE dl.dentist_id=d.dentist_id AND dl.leave_date=?)";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(dentistSql)) {
-            stmt.setInt(1, dentistId);
-            stmt.setInt(2, treatmentId);
+            stmt.setString(1,date.getDayOfWeek().name());
+            stmt.setInt(2, dentistId);
+            stmt.setInt(3, treatmentId);
+            stmt.setString(4,date.toString());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (!rs.next()) {
@@ -192,7 +195,7 @@ public class UpdateAppointmentServlet extends HttpServlet {
                 }
 
                 if (isActiveStatus(status)) {
-                    String day = rs.getString("available_day");
+                    String day = rs.getString("day_of_week");
                     Time fromValue = rs.getTime("available_from");
                     Time toValue = rs.getTime("available_to");
 
@@ -339,8 +342,8 @@ public class UpdateAppointmentServlet extends HttpServlet {
         request.setAttribute(
                 "dentists",
                 loadRows(
-                        "SELECT dentist_id,dentist_name,available_day "
-                        + "FROM dentists WHERE status='Active' ORDER BY dentist_name",
+                        "SELECT d.dentist_id,d.dentist_name,GROUP_CONCAT(da.day_of_week ORDER BY FIELD(da.day_of_week,'MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY','SUNDAY')) available_day "
+                        + "FROM dentists d JOIN dentist_availability da ON da.dentist_id=d.dentist_id AND da.is_active=1 WHERE d.status='Active' GROUP BY d.dentist_id,d.dentist_name ORDER BY d.dentist_name",
                         "dentistId", "dentist_id",
                         "dentistName", "dentist_name",
                         "availableDay", "available_day"

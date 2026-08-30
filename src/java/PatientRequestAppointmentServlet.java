@@ -146,25 +146,17 @@ public class PatientRequestAppointmentServlet extends HttpServlet {
                     conn,
                     dentistId,
                     treatmentId,
+                    date,
                     false
             );
 
             if (availability == null) {
                 request.setAttribute(
                         "error",
-                        "The selected dentist is not available for this treatment."
+                        "The selected dentist is not available on this date or has announced leave."
                 );
             } else if (date.isBefore(LocalDate.now())) {
                 request.setAttribute("error", "Please select a future date.");
-            } else if (availability.availableDay == null
-                    || !date.getDayOfWeek().name()
-                            .equalsIgnoreCase(availability.availableDay)) {
-                request.setAttribute(
-                        "scheduleMessage",
-                        availability.dentistName + " visits on "
-                        + availability.availableDay + "s. Please choose a "
-                        + availability.availableDay + "."
-                );
             } else {
                 Set<LocalTime> reserved = loadReservedTimes(conn, dentistId, date);
                 LocalTime slot = availability.availableFrom;
@@ -230,25 +222,28 @@ public class PatientRequestAppointmentServlet extends HttpServlet {
             Connection conn,
             int dentistId,
             int treatmentId,
+            LocalDate date,
             boolean lockForReservation)
             throws SQLException {
 
         String sql =
-                "SELECT d.dentist_name, d.available_day, "
-                + "d.available_from, d.available_to "
+                "SELECT d.dentist_name, da.day_of_week, "
+                + "da.available_from, da.available_to "
                 + "FROM dentists d "
                 + "INNER JOIN dentist_treatments dt "
                 + "ON d.dentist_id = dt.dentist_id "
+                + "INNER JOIN dentist_availability da ON da.dentist_id=d.dentist_id "
                 + "WHERE d.dentist_id = ? AND dt.treatment_id = ? "
                 + "AND d.status = 'Active' "
-                + "AND d.available_day IS NOT NULL "
-                + "AND d.available_from IS NOT NULL "
-                + "AND d.available_to IS NOT NULL"
+                + "AND da.is_active=1 AND da.day_of_week=? "
+                + "AND NOT EXISTS (SELECT 1 FROM dentist_leaves dl WHERE dl.dentist_id=d.dentist_id AND dl.leave_date=?)"
                 + (lockForReservation ? " FOR UPDATE" : "");
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, dentistId);
             stmt.setInt(2, treatmentId);
+            stmt.setString(3, date.getDayOfWeek().name());
+            stmt.setString(4, date.toString());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (!rs.next()) {
@@ -260,7 +255,7 @@ public class PatientRequestAppointmentServlet extends HttpServlet {
 
                 return new DentistAvailability(
                         rs.getString("dentist_name"),
-                        rs.getString("available_day"),
+                        rs.getString("day_of_week"),
                         from == null ? null : from.toLocalTime(),
                         to == null ? null : to.toLocalTime()
                 );
@@ -275,14 +270,14 @@ public class PatientRequestAppointmentServlet extends HttpServlet {
         List<Map<String, Object>> dentists = new ArrayList<>();
         String sql =
                 "SELECT d.dentist_id, d.dentist_name, d.specialization, "
-                + "d.available_day, d.available_from, d.available_to "
+                + "GROUP_CONCAT(DISTINCT da.day_of_week ORDER BY FIELD(da.day_of_week,'MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY','SUNDAY')) available_days, "
+                + "(SELECT GROUP_CONCAT(dl.leave_date ORDER BY dl.leave_date) FROM dentist_leaves dl WHERE dl.dentist_id=d.dentist_id AND dl.leave_date>=CURRENT_DATE) leave_dates "
                 + "FROM dentists d "
                 + "INNER JOIN dentist_treatments dt "
                 + "ON d.dentist_id = dt.dentist_id "
+                + "INNER JOIN dentist_availability da ON da.dentist_id=d.dentist_id AND da.is_active=1 "
                 + "WHERE dt.treatment_id = ? AND d.status = 'Active' "
-                + "AND d.available_day IS NOT NULL "
-                + "AND d.available_from IS NOT NULL "
-                + "AND d.available_to IS NOT NULL "
+                + "GROUP BY d.dentist_id,d.dentist_name,d.specialization "
                 + "ORDER BY d.dentist_name";
 
         try (Connection conn = DBConnection.getConnection();
@@ -295,9 +290,9 @@ public class PatientRequestAppointmentServlet extends HttpServlet {
                     dentist.put("dentistId", rs.getInt("dentist_id"));
                     dentist.put("dentistName", rs.getString("dentist_name"));
                     dentist.put("specialization", rs.getString("specialization"));
-                    dentist.put("availableDay", rs.getString("available_day"));
-                    dentist.put("availableFrom", rs.getTime("available_from"));
-                    dentist.put("availableTo", rs.getTime("available_to"));
+                    dentist.put("availableDay", displayDays(rs.getString("available_days")));
+                    dentist.put("availableDays", rs.getString("available_days"));
+                    dentist.put("leaveDates", rs.getString("leave_dates") == null ? "" : rs.getString("leave_dates"));
                     dentists.add(dentist);
                 }
             }
@@ -407,6 +402,16 @@ public class PatientRequestAppointmentServlet extends HttpServlet {
                 && "Patient".equalsIgnoreCase(
                         (String) session.getAttribute("role")
                 );
+    }
+
+    private String displayDays(String days) {
+        if (days == null) return "";
+        StringBuilder result = new StringBuilder();
+        for (String day : days.split(",")) {
+            if (result.length() > 0) result.append(", ");
+            result.append(day.substring(0, 1)).append(day.substring(1).toLowerCase());
+        }
+        return result.toString();
     }
 
     private static class DentistAvailability {

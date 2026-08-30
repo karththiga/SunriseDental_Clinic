@@ -54,7 +54,7 @@
     <% if(error!=null){%><div class="message error"><%=error%></div><%} if(success!=null){%><div class="message success"><%=success%></div><%}%>
 
     <% if("users".equals(activeTab)){ %>
-    <section class="form-panel">
+    <section id="person-form" class="form-panel ux-focus-target" tabindex="-1">
         <h2><%=editingUser?"Update User Account":"Add User Account"%></h2>
         <form action="${pageContext.request.contextPath}/ManagePeopleServlet" method="post">
             <input type="hidden" name="action" value="<%=editingUser?"updateUser":"createUser"%>"><%if(editingUser){%><input type="hidden" name="userId" value="<%=editUserId%>"><%}%>
@@ -75,7 +75,7 @@
     </tbody></table></div>
 
     <% } else { %>
-    <section class="form-panel">
+    <section id="person-form" class="form-panel ux-focus-target" tabindex="-1">
         <h2><%=editingDentist?"Update Dentist":"Add Dentist"%></h2>
         <form action="${pageContext.request.contextPath}/ManagePeopleServlet" method="post">
             <input type="hidden" name="action" value="<%=editingDentist?"updateDentist":"createDentist"%>"><%if(editingDentist){%><input type="hidden" name="dentistId" value="<%=editDentistId%>"><input type="hidden" name="userId" value="<%=value(request.getAttribute("editDentistUserId"))%>"><%}%>
@@ -104,4 +104,4 @@
     </tbody></table></div>
     <% } %>
     <a class="back-link" href="adminDashboard.jsp">← Back to Admin Dashboard</a>
-</section></main></body></html>
+</section></main><script src="${pageContext.request.contextPath}/js/clinic-ux.js"></script><%if(editingUser||editingDentist){%><script>window.addEventListener("DOMContentLoaded",function(){clinicFocusSection("person-form");});</script><%}%></body></html>

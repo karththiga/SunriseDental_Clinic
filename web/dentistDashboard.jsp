@@ -163,12 +163,12 @@
         Sunrise Dental Clinic | Dentist
     </div>
 
-    <a class="logout"
+    <div class="navbar-actions"><a class="notification-link" href="${pageContext.request.contextPath}/NotificationServlet">Notifications</a><a class="logout"
        href="${pageContext.request.contextPath}/LogoutServlet">
 
         Logout
 
-    </a>
+    </a></div>
 
 </div>
 
@@ -214,6 +214,11 @@
                 respond to legacy pending requests.
             </p>
 
+        </a>
+
+        <a href="${pageContext.request.contextPath}/DoctorAvailabilityServlet" class="card">
+            <h3>My Availability</h3>
+            <p>Maintain weekly visiting hours and announce individual leave dates.</p>
         </a>
 
         <a href="help.jsp" class="card">

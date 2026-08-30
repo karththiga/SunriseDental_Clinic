@@ -140,6 +140,8 @@
             <%= firstName %> <%= lastName %>
         </span>
 
+        <a class="notification-link" href="${pageContext.request.contextPath}/NotificationServlet">Notifications</a>
+
         <a class="logout-btn"
            href="${pageContext.request.contextPath}/LogoutServlet">
             Logout
@@ -175,58 +177,18 @@
 
     <div class="menu-grid">
 
-        <a href="${pageContext.request.contextPath}/AppointmentServlet"
-           class="menu-card">
-
-            <h3>
-                New Appointment
-            </h3>
-
-            <p>
-                Register a new patient appointment.
-            </p>
-
-        </a>
-
         <a href="${pageContext.request.contextPath}/ManageAppointmentsServlet"
            class="menu-card">
 
             <h3>
-                View Appointments
+                Manage Appointments
             </h3>
 
             <p>
-                View all registered appointments.
+                Search, reserve, review and update registered appointments.
             </p>
 
         </a>
-
-        <a href="searchAppointment.jsp"
-           class="menu-card">
-
-            <h3>
-                Search Appointment
-            </h3>
-
-            <p>
-                Search using an appointment number.
-            </p>
-
-        </a>
-
-        <a href="updateAppointment.jsp"
-   class="menu-card">
-
-    <h3>
-        Update Appointment
-    </h3>
-
-    <p>
-        Update appointment information
-        or restore the previous change.
-    </p>
-
-</a>
 
         <a href="${pageContext.request.contextPath}/ReportsServlet"
            class="menu-card">

@@ -179,6 +179,8 @@
             <%= firstName %> <%= lastName %>
         </span>
 
+        <a class="notification-link" href="${pageContext.request.contextPath}/NotificationServlet">Notifications</a>
+
         <a class="logout"
            href="${pageContext.request.contextPath}/LogoutServlet">
 
@@ -218,13 +220,6 @@
 
     <div class="menu-grid">
 
-       <a href="${pageContext.request.contextPath}/AppointmentServlet"
-           class="menu-card">
-            <h3>Reserve Appointment</h3>
-            <p>Create an unpaid phone or walk-in reservation. The cashier collects payment and prints the receipt.</p>
-        </a>
-
-
        <a href="${pageContext.request.contextPath}/ManagePeopleServlet"
            class="menu-card">
 
@@ -263,7 +258,7 @@
             </h3>
 
             <p>
-                Search, review and edit all
+                Search, create, review, edit and cancel
                 patient appointments in one place.
             </p>
 

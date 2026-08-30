@@ -255,6 +255,28 @@ tr:hover td {
     color: white !important;
 }
 
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.notification-link {
+    display: inline-flex;
+    min-height: 40px;
+    padding: 0 13px;
+    align-items: center;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, .55);
+    border-radius: 9px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.notification-link:hover {
+    background: rgba(255, 255, 255, .12);
+}
+
 .back-link, .signup-link a,
 .container a:not(.card):not(.menu-card):not(.logout) {
     color: var(--clinic-blue);
@@ -289,4 +311,23 @@ tr:hover td {
     .container {
         margin-top: 28px !important;
     }
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 24px;
+}
+
+:focus-visible {
+    outline: 3px solid #f4b942 !important;
+    outline-offset: 3px;
+}
+
+.ux-focus-target:focus {
+    outline: 3px solid rgba(33, 167, 160, .45);
+    outline-offset: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
 }

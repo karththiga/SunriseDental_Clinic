@@ -55,6 +55,12 @@
         label { display: block; margin-bottom: 7px; font-weight: bold; }
         select, input { width: 100%; padding: 12px; border: 1px solid #c8d1dd; border-radius: 7px; font-size: 15px; background: white; }
         .hint { margin: 7px 0 0; color: #6c7886; font-size: 13px; }
+        .date-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 9px; max-height: 250px; padding: 4px; overflow-y: auto; }
+        .date-option { margin: 0; position: relative; }
+        .date-option input { position: absolute; opacity: 0; pointer-events: none; }
+        .date-option span { display: grid; gap: 3px; min-height: 62px; padding: 9px 5px; align-content: center; border: 1px solid #bfcde0; border-radius: 8px; color: #176b87; background: white; text-align: center; cursor: pointer; }
+        .date-option input:checked + span { color: white; background: #21a7a0; border-color: #21a7a0; }
+        .calendar-empty { grid-column: 1/-1; margin: 0; padding: 16px; color: #687687; background: #f5f7fa; text-align: center; }
         .button { width: 100%; margin-top: 20px; padding: 13px; border: 0; border-radius: 7px; color: white; background: #21a7a0; cursor: pointer; font-size: 16px; font-weight: bold; }
         .button:hover { background: #21a7a0; }
         .message { margin-bottom: 20px; padding: 13px; border-radius: 8px; text-align: center; }
@@ -79,6 +85,7 @@
             .form-grid { grid-template-columns: 1fr; }
             .field.full { grid-column: auto; }
             .slots { grid-template-columns: repeat(2, 1fr); }
+            .date-grid { grid-template-columns: repeat(3, 1fr); }
             .steps { font-size: 11px; }
         }
     </style>
@@ -109,8 +116,9 @@
                 <div class="message info"><%= scheduleMessage %></div>
             <% } %>
 
-            <form action="${pageContext.request.contextPath}/PatientRequestAppointmentServlet"
-                  method="get">
+            <form id="booking-options" class="ux-focus-target"
+                  action="${pageContext.request.contextPath}/PatientRequestAppointmentServlet"
+                  method="get" tabindex="-1">
                 <div class="form-grid">
                     <div class="field <%= selectedTreatmentId == null ? "full" : "" %>">
                         <label for="treatmentId">Treatment</label>
@@ -139,7 +147,7 @@
                                     for (Map<String, Object> dentist : dentists) {
                                         Integer dentistId =
                                             (Integer) dentist.get("dentistId"); %>
-                                        <option value="<%= dentistId %>"
+                                    <option value="<%= dentistId %>" data-days="<%=dentist.get("availableDays")%>" data-leaves="<%=dentist.get("leaveDates")%>"
                                             <%= dentistId.equals(selectedDentistId)
                                                     ? "selected" : "" %>>
                                             <%= dentist.get("dentistName") %> — <%= dentist.get("availableDay") %>
@@ -153,13 +161,9 @@
                         </div>
 
                         <div class="field full">
-                            <label for="appointmentDate">Appointment date</label>
-                            <input id="appointmentDate" type="date"
-                                   name="appointmentDate"
-                                   min="<%= request.getAttribute("minimumDate") %>"
-                                   value="<%= selectedDate == null ? "" : selectedDate %>"
-                                   required>
-                            <p class="hint">Choose the visiting day shown beside the dentist's name.</p>
+                            <label id="appointmentDateLabel">Available appointment dates</label>
+                            <div id="appointment-calendar" class="date-grid ux-focus-target" tabindex="-1" aria-labelledby="appointmentDateLabel"></div>
+                            <p class="hint">Only the dentist's active visiting weekdays are shown. Announced leave dates are excluded.</p>
                         </div>
                     <% } %>
                 </div>
@@ -171,7 +175,7 @@
             </form>
 
             <% if (availableSlots != null && scheduleMessage == null) { %>
-                <div class="slots-panel">
+                <div id="slot-options" class="slots-panel ux-focus-target" tabindex="-1">
                     <h2>Available time slots</h2>
                     <p class="slot-summary">
                         <%= request.getAttribute("selectedDentistName") %> ·
@@ -215,5 +219,13 @@
 
         <a href="patientDashboard.jsp" class="back-link">← Back to Patient Dashboard</a>
     </main>
+    <script src="${pageContext.request.contextPath}/js/clinic-ux.js"></script>
+    <script src="${pageContext.request.contextPath}/js/booking-calendar.js"></script>
+    <script>initClinicBookingCalendar({dentistSelectId:"dentistId",calendarId:"appointment-calendar",selectedDate:"<%=selectedDate==null?"":selectedDate%>"});</script>
+    <% if (availableSlots != null) { %>
+    <script>window.addEventListener("DOMContentLoaded", function () { clinicFocusSection("slot-options"); });</script>
+    <% } else if (selectedTreatmentId != null) { %>
+    <script>window.addEventListener("DOMContentLoaded", function () { clinicFocusSection("booking-options"); });</script>
+    <% } %>
 </body>
 </html>

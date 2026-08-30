@@ -297,7 +297,7 @@
         if (Boolean.TRUE.equals(found)) {
     %>
 
-    <div class="result-box">
+    <div id="appointment-result" class="result-box ux-focus-target" tabindex="-1">
 
         <h2>
             Appointment Details
@@ -482,6 +482,8 @@
 
 </div>
 
+<script src="${pageContext.request.contextPath}/js/clinic-ux.js"></script>
+<% if (Boolean.TRUE.equals(found)) { %><script>window.addEventListener("DOMContentLoaded", function () { clinicFocusSection("appointment-result"); });</script><% } %>
 </body>
 
 </html>

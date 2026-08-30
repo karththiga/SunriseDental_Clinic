@@ -63,6 +63,8 @@ public class PatientPaymentFacade {
                     stmt.setInt(2, appointmentId);
                     stmt.executeUpdate();
                 }
+                new ClinicNotificationService().appointmentCreated(conn, appointmentId,
+                        pending.getPatientUserId());
 
                 BigDecimal hospitalCharge = PaymentSummary.HOSPITAL_CHARGE;
                 BigDecimal total = record.treatmentCost.add(hospitalCharge);
@@ -96,23 +98,27 @@ public class PatientPaymentFacade {
     private CheckoutRecord lockCheckoutRecord(Connection conn,
             PendingReservation pending) throws SQLException {
         String sql = "SELECT CONCAT(u.first_name,' ',u.last_name) patient_name," 
-                + "u.phone_number,d.dentist_name,d.available_day,d.available_from," 
-                + "d.available_to,t.treatment_cost "
+                + "u.phone_number,d.dentist_name,da.day_of_week,da.available_from,"
+                + "da.available_to,t.treatment_cost "
                 + "FROM users u JOIN dentists d ON d.dentist_id=? "
                 + "JOIN dentist_treatments dt ON dt.dentist_id=d.dentist_id AND dt.treatment_id=? "
+                + "JOIN dentist_availability da ON da.dentist_id=d.dentist_id AND da.day_of_week=? AND da.is_active=1 "
                 + "JOIN treatments t ON t.treatment_id=dt.treatment_id "
-                + "WHERE u.user_id=? AND u.role='Patient' AND d.status='Active' FOR UPDATE";
+                + "WHERE u.user_id=? AND u.role='Patient' AND d.status='Active' "
+                + "AND NOT EXISTS (SELECT 1 FROM dentist_leaves dl WHERE dl.dentist_id=d.dentist_id AND dl.leave_date=?) FOR UPDATE";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, pending.getDentistId());
             stmt.setInt(2, pending.getTreatmentId());
-            stmt.setInt(3, pending.getPatientUserId());
+            stmt.setString(3, pending.getAppointmentDate().getDayOfWeek().name());
+            stmt.setInt(4, pending.getPatientUserId());
+            stmt.setString(5, pending.getAppointmentDate().toString());
             try (ResultSet rs = stmt.executeQuery()) {
                 if (!rs.next()) return null;
                 Time from = rs.getTime("available_from");
                 Time to = rs.getTime("available_to");
                 return new CheckoutRecord(rs.getString("patient_name"),
                         rs.getString("phone_number"), rs.getString("dentist_name"),
-                        rs.getString("available_day"),
+                        rs.getString("day_of_week"),
                         from == null ? null : from.toLocalTime(),
                         to == null ? null : to.toLocalTime(),
                         rs.getBigDecimal("treatment_cost"));

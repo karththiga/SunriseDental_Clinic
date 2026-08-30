@@ -91,10 +91,10 @@
         Sunrise Dental Clinic | Cashier
     </h2>
 
-    <a class="logout"
+    <div class="navbar-actions"><a class="notification-link" href="${pageContext.request.contextPath}/NotificationServlet">Notifications</a><a class="logout"
        href="${pageContext.request.contextPath}/LogoutServlet">
         Logout
-    </a>
+    </a></div>
 
 </div>
 

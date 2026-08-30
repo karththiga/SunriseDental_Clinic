@@ -72,7 +72,7 @@
             <% if (error != null) { %><div class="message error"><%= error %></div><% } %>
             <% if (success != null) { %><div class="message success"><%= success %></div><% } %>
 
-            <section class="form-panel">
+            <section id="treatment-form" class="form-panel ux-focus-target" tabindex="-1">
                 <h2><%= editId == null ? "Add Treatment" : "Update Treatment" %></h2>
                 <form action="${pageContext.request.contextPath}/ManageTreatmentsServlet" method="post">
                     <% if (editId != null) { %><input type="hidden" name="treatmentId" value="<%= editId %>"><% } %>
@@ -100,5 +100,7 @@
             <a class="back-link" href="adminDashboard.jsp">← Back to Admin Dashboard</a>
         </section>
     </main>
+    <script src="${pageContext.request.contextPath}/js/clinic-ux.js"></script>
+    <% if (editId != null) { %><script>window.addEventListener("DOMContentLoaded", function () { clinicFocusSection("treatment-form"); });</script><% } %>
 </body>
 </html>
