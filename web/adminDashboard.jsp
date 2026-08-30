@@ -218,6 +218,12 @@
 
     <div class="menu-grid">
 
+       <a href="${pageContext.request.contextPath}/AppointmentServlet"
+           class="menu-card">
+            <h3>Reserve Appointment</h3>
+            <p>Create an unpaid phone or walk-in reservation. The cashier collects payment and prints the receipt.</p>
+        </a>
+
 
        <a href="${pageContext.request.contextPath}/ManagePeopleServlet"
            class="menu-card">

@@ -118,7 +118,7 @@
 
     <h2 class="section-title">Cashier Services</h2>
     <div class="menu-grid">
-        <a class="card" href="bill.jsp"><h3>Billing</h3><p>Calculate treatment and consultation charges and print the patient receipt.</p></a>
+        <a class="card" href="${pageContext.request.contextPath}/BillServlet"><h3>Payments and Receipts</h3><p>Search appointments, collect outstanding payments and print paid online or counter receipts.</p></a>
         <a class="card" href="help.jsp"><h3>Help</h3><p>View step-by-step instructions for clinic workflows and safe logout.</p></a>
     </div>
 

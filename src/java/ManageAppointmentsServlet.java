@@ -63,7 +63,7 @@ public class ManageAppointmentsServlet extends HttpServlet {
                 "SELECT a.appointment_id, a.appointment_number, "
                 + "a.patient_name, a.contact_number, a.appointment_date, "
                 + "a.appointment_time, a.status, a.cancellation_reason, "
-                + "d.dentist_name, t.treatment_name, b.payment_status, "
+                + "d.dentist_name, t.treatment_name, COALESCE(b.payment_status,'Unpaid') payment_status, "
                 + "b.total_amount, b.refund_reference, b.refunded_amount "
                 + "FROM appointments a "
                 + "LEFT JOIN dentists d ON a.dentist_id=d.dentist_id "

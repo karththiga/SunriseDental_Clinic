@@ -53,6 +53,7 @@
         <h1><%= helpTitle %></h1><p class="subtitle">Instructions for the functions available to your <%= role %> account.</p>
         <div class="steps">
             <% if (adminHelp) { %>
+                <article class="step"><h2>Reserve phone or walk-in appointments</h2><p>Open Reserve Appointment, choose a live dentist slot and save it without payment. The reservation is Confirmed with an Unpaid payment status; direct the patient to the cashier for payment and the official receipt.</p></article>
                 <article class="step"><h2>Manage people</h2><p>Open Manage People to create, view, edit or delete user accounts and dentist profiles. Dentist editing also maintains login details, visiting hours, status and treatment assignments together.</p></article>
                 <article class="step"><h2>Manage treatments</h2><p>Create, view, edit or delete treatment names and prices. Records already used by appointments are protected so historical clinic data remains accurate.</p></article>
                 <article class="step"><h2>Manage appointments</h2><p>Open Manage Appointments to search or edit records. Use Cancel to provide a reason, refund a paid bill automatically and notify the registered patient. Undo remains available for ordinary appointment edits.</p></article>
@@ -62,12 +63,12 @@
                 <article class="step"><h2>Register an appointment</h2><p>Open New Appointment, enter the patient and appointment information, validate the selected dentist and treatment, then save the record.</p></article>
                 <article class="step"><h2>View and search appointments</h2><p>Use View Appointments for the complete list. Use Search Appointment when an appointment number is available, or use the management search to locate a patient by number, phone or name.</p></article>
                 <article class="step"><h2>Update an appointment</h2><p>Open the selected appointment, change only the required values and save. Use the restore option if the latest update must be undone.</p></article>
-                <article class="step"><h2>Billing and reports</h2><p>Use Billing to generate a receipt for an appointment that requires staff billing. Use Reports to review clinic appointment summaries and operational activity.</p></article>
+                <article class="step"><h2>Payment responsibility</h2><p>New phone or walk-in reservations remain Unpaid. Direct patients to the cashier because staff accounts cannot collect payment or print official receipts. Reports remain available for operational review.</p></article>
                 <article class="step"><h2>Exit safely</h2><p>Select Logout when staff work is complete, especially before leaving a shared reception computer.</p></article>
             <% } else if (cashierHelp) { %>
-                <article class="step"><h2>Open Billing</h2><p>Select Billing from the Cashier Dashboard and enter the patient appointment number.</p></article>
-                <article class="step"><h2>Verify the bill</h2><p>Confirm the appointment, patient, treatment and displayed charges before recording the bill. Do not repeat the operation if a paid receipt already exists.</p></article>
-                <article class="step"><h2>Print the receipt</h2><p>After the bill is generated, review the total and use Print Receipt to provide the patient with a paper or PDF copy.</p></article>
+                <article class="step"><h2>Search the appointment</h2><p>Open Payments and Receipts and search by appointment number, patient name or phone number. Searching never collects payment.</p></article>
+                <article class="step"><h2>Check payment status</h2><p>For a Paid online appointment, verify the details and print its existing receipt. For an Unpaid phone or walk-in reservation, collect the full amount, select Cash or Card - Counter and mark it Paid.</p></article>
+                <article class="step"><h2>Print the receipt</h2><p>Print becomes available only after payment. Verify the treatment charge, Rs. 800 hospital charge, total, payment method and reference before giving the receipt to the patient.</p></article>
                 <article class="step"><h2>Exit cashier access</h2><p>Select Logout immediately after completing cashier work. Never leave a billing session open on a shared terminal.</p></article>
             <% } else if (dentistHelp) { %>
                 <article class="step"><h2>View assigned appointments</h2><p>Open Upcoming Appointments to see pending and confirmed bookings assigned to your dentist account, including patient, treatment, date and time details.</p></article>
@@ -77,7 +78,7 @@
             <% } else if (patientHelp) { %>
                 <article class="step"><h2>Reserve an appointment</h2><p>Open Reserve Appointment, choose a treatment, select a dentist and visiting date, then choose one of the live available time slots.</p></article>
                 <article class="step"><h2>Review charges and pay</h2><p>Continue to Card Payment. Review the treatment charge, constant hospital charge and total payable, then enter the card details and confirm payment. Card numbers and CVV values are not stored.</p></article>
-                <article class="step"><h2>Save the confirmation receipt</h2><p>After successful payment, note the appointment and payment reference numbers. Use Print Receipt to save or print the payment and appointment confirmation.</p></article>
+                <article class="step"><h2>Review payment confirmation</h2><p>After successful online payment, note the appointment and payment reference numbers. The cashier can search the paid appointment and provide the official printed receipt at the clinic counter.</p></article>
                 <article class="step"><h2>View your appointments</h2><p>Open My Appointments to review clinic notifications and booking details. A clinic cancellation shows its reason and, when paid, the refunded amount and refund reference.</p></article>
                 <article class="step"><h2>Exit patient access</h2><p>Select Logout when finished, particularly when using a shared device.</p></article>
             <% } %>

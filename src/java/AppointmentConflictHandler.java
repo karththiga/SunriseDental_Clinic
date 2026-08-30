@@ -18,7 +18,7 @@ public class AppointmentConflictHandler
                 + "WHERE dentist_id = ? "
                 + "AND appointment_date = ? "
                 + "AND appointment_time = ? "
-                + "AND status <> 'Rejected'";
+                + "AND status NOT IN ('Rejected','Cancelled')";
 
         try (
             Connection conn =

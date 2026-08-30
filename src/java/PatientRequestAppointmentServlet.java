@@ -210,7 +210,7 @@ public class PatientRequestAppointmentServlet extends HttpServlet {
         String sql =
                 "SELECT appointment_time FROM appointments "
                 + "WHERE dentist_id = ? AND appointment_date = ? "
-                + "AND status <> 'Rejected'";
+                + "AND status NOT IN ('Rejected','Cancelled')";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, dentistId);

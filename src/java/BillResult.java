@@ -1,156 +1,36 @@
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+
+/** Billing DTO used for cashier search, payment collection and receipts. */
 public class BillResult {
-
     private int appointmentId;
+    private String appointmentNumber, patientName, contactNumber, dentistName,
+            treatmentName, appointmentDate, appointmentTime, appointmentStatus,
+            paymentStatus, paymentReference, paymentMethod, cardLastFour,
+            refundReference;
+    private BigDecimal treatmentCost, hospitalCharge, totalAmount, refundedAmount;
+    private Timestamp paymentDate, refundedAt;
 
-    private String appointmentNumber;
-
-    private String patientName;
-
-    private String contactNumber;
-
-    private String dentistName;
-
-    private String treatmentName;
-
-    private String appointmentDate;
-
-    private String appointmentTime;
-
-    private double treatmentCost;
-
-    private double consultationFee;
-
-    private double totalAmount;
-
-
-    public int getAppointmentId() {
-        return appointmentId;
-    }
-
-    public void setAppointmentId(
-            int appointmentId) {
-
-        this.appointmentId =
-                appointmentId;
-    }
-
-
-    public String getAppointmentNumber() {
-        return appointmentNumber;
-    }
-
-    public void setAppointmentNumber(
-            String appointmentNumber) {
-
-        this.appointmentNumber =
-                appointmentNumber;
-    }
-
-
-    public String getPatientName() {
-        return patientName;
-    }
-
-    public void setPatientName(
-            String patientName) {
-
-        this.patientName =
-                patientName;
-    }
-
-
-    public String getContactNumber() {
-        return contactNumber;
-    }
-
-    public void setContactNumber(
-            String contactNumber) {
-
-        this.contactNumber =
-                contactNumber;
-    }
-
-
-    public String getDentistName() {
-        return dentistName;
-    }
-
-    public void setDentistName(
-            String dentistName) {
-
-        this.dentistName =
-                dentistName;
-    }
-
-
-    public String getTreatmentName() {
-        return treatmentName;
-    }
-
-    public void setTreatmentName(
-            String treatmentName) {
-
-        this.treatmentName =
-                treatmentName;
-    }
-
-
-    public String getAppointmentDate() {
-        return appointmentDate;
-    }
-
-    public void setAppointmentDate(
-            String appointmentDate) {
-
-        this.appointmentDate =
-                appointmentDate;
-    }
-
-
-    public String getAppointmentTime() {
-        return appointmentTime;
-    }
-
-    public void setAppointmentTime(
-            String appointmentTime) {
-
-        this.appointmentTime =
-                appointmentTime;
-    }
-
-
-    public double getTreatmentCost() {
-        return treatmentCost;
-    }
-
-    public void setTreatmentCost(
-            double treatmentCost) {
-
-        this.treatmentCost =
-                treatmentCost;
-    }
-
-
-    public double getConsultationFee() {
-        return consultationFee;
-    }
-
-    public void setConsultationFee(
-            double consultationFee) {
-
-        this.consultationFee =
-                consultationFee;
-    }
-
-
-    public double getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(
-            double totalAmount) {
-
-        this.totalAmount =
-                totalAmount;
-    }
+    public int getAppointmentId(){return appointmentId;} public void setAppointmentId(int v){appointmentId=v;}
+    public String getAppointmentNumber(){return appointmentNumber;} public void setAppointmentNumber(String v){appointmentNumber=v;}
+    public String getPatientName(){return patientName;} public void setPatientName(String v){patientName=v;}
+    public String getContactNumber(){return contactNumber;} public void setContactNumber(String v){contactNumber=v;}
+    public String getDentistName(){return dentistName;} public void setDentistName(String v){dentistName=v;}
+    public String getTreatmentName(){return treatmentName;} public void setTreatmentName(String v){treatmentName=v;}
+    public String getAppointmentDate(){return appointmentDate;} public void setAppointmentDate(String v){appointmentDate=v;}
+    public String getAppointmentTime(){return appointmentTime;} public void setAppointmentTime(String v){appointmentTime=v;}
+    public String getAppointmentStatus(){return appointmentStatus;} public void setAppointmentStatus(String v){appointmentStatus=v;}
+    public String getPaymentStatus(){return paymentStatus;} public void setPaymentStatus(String v){paymentStatus=v;}
+    public String getPaymentReference(){return paymentReference;} public void setPaymentReference(String v){paymentReference=v;}
+    public String getPaymentMethod(){return paymentMethod;} public void setPaymentMethod(String v){paymentMethod=v;}
+    public String getCardLastFour(){return cardLastFour;} public void setCardLastFour(String v){cardLastFour=v;}
+    public String getRefundReference(){return refundReference;} public void setRefundReference(String v){refundReference=v;}
+    public BigDecimal getTreatmentCost(){return treatmentCost;} public void setTreatmentCost(BigDecimal v){treatmentCost=v;}
+    public BigDecimal getHospitalCharge(){return hospitalCharge;} public void setHospitalCharge(BigDecimal v){hospitalCharge=v;}
+    public BigDecimal getTotalAmount(){return totalAmount;} public void setTotalAmount(BigDecimal v){totalAmount=v;}
+    public BigDecimal getRefundedAmount(){return refundedAmount;} public void setRefundedAmount(BigDecimal v){refundedAmount=v;}
+    public Timestamp getPaymentDate(){return paymentDate;} public void setPaymentDate(Timestamp v){paymentDate=v;}
+    public Timestamp getRefundedAt(){return refundedAt;} public void setRefundedAt(Timestamp v){refundedAt=v;}
+    public boolean isPaid(){return "Paid".equalsIgnoreCase(paymentStatus);}
+    public boolean isUnpaid(){return "Unpaid".equalsIgnoreCase(paymentStatus);}
 }

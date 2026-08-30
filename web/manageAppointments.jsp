@@ -143,7 +143,7 @@
                                 <td><%= row.get("appointmentTime") %></td>
                                 <td><span class="status <%= statusClass %>"><%= status %></span></td>
                                 <td class="payment">
-                                    <%= row.get("paymentStatus") %>
+                                    <strong><%= row.get("paymentStatus") %></strong>
                                     <% if (row.get("refundedAmount") != null) { %><br><span class="refund">LKR <%= row.get("refundedAmount") %> refunded</span><br><%= row.get("refundReference") %><% } %>
                                     <% if ("Cancelled".equalsIgnoreCase(status) && row.get("cancellationReason") != null) { %><br>Reason: <%= row.get("cancellationReason") %><% } %>
                                 </td>

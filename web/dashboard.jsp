@@ -175,7 +175,7 @@
 
     <div class="menu-grid">
 
-        <a href="registerAppointment.jsp"
+        <a href="${pageContext.request.contextPath}/AppointmentServlet"
            class="menu-card">
 
             <h3>
@@ -214,19 +214,6 @@
 
         </a>
 
-        <a href="bill.jsp"
-           class="menu-card">
-
-            <h3>
-                Billing
-            </h3>
-
-            <p>
-                Calculate treatment cost and print bills.
-            </p>
-
-        </a>
-        
         <a href="updateAppointment.jsp"
    class="menu-card">
 

@@ -117,9 +117,7 @@
 
             <div class="actions">
                 <a class="button secondary" href="${pageContext.request.contextPath}/PatientAppointmentsServlet">My appointments</a>
-                <% if (Boolean.TRUE.equals(found)) { %>
-                    <button class="button" type="button" onclick="window.print()">Print receipt</button>
-                <% } %>
+                <% if (Boolean.TRUE.equals(found)) { %><span class="button">Printed receipts are issued by the cashier</span><% } %>
             </div>
         </section>
     </main>
