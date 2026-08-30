@@ -20,12 +20,12 @@
         * { box-sizing: border-box; }
         body { margin: 0; padding: 35px 18px; font-family: Arial, sans-serif; color: #223; background: #eef3f8; }
         .receipt { max-width: 720px; margin: 0 auto; overflow: hidden; background: white; border-radius: 15px; box-shadow: 0 10px 35px rgba(20,45,75,.13); }
-        .receipt-head { padding: 30px 34px; color: white; background: #1f6feb; }
+        .receipt-head { padding: 30px 34px; color: white; background: #21a7a0; }
         .receipt-head h1 { margin: 0 0 5px; font-size: 27px; }
         .receipt-head p { margin: 0; color: #dceaff; }
         .confirmed { display: inline-block; margin-top: 17px; padding: 7px 12px; color: #12622b; background: #e0f7e8; border-radius: 999px; font-size: 13px; font-weight: bold; }
         .receipt-body { padding: 32px 34px; }
-        .appointment-number { margin-bottom: 26px; padding: 18px; color: #174a8b; background: #edf5ff; border: 1px dashed #86ade1; border-radius: 9px; text-align: center; }
+        .appointment-number { margin-bottom: 26px; padding: 18px; color: #176b87; background: #e9f8f5; border: 1px dashed #8fc8c4; border-radius: 9px; text-align: center; }
         .appointment-number small { display: block; color: #647589; text-transform: uppercase; letter-spacing: .08em; }
         .appointment-number strong { display: block; margin-top: 4px; font-size: 28px; letter-spacing: .04em; }
         .details { display: grid; grid-template-columns: 1fr 1fr; gap: 0 25px; }
@@ -34,12 +34,13 @@
         .detail strong { color: #1e344c; }
         .cost-note { margin-top: 22px; padding: 15px; color: #526274; background: #f6f8fa; border-radius: 8px; font-size: 13px; }
         .actions { display: flex; gap: 12px; margin-top: 27px; }
-        .button { flex: 1; padding: 12px; border: 1px solid #1f6feb; border-radius: 7px; color: white; background: #1f6feb; text-align: center; text-decoration: none; font-weight: bold; cursor: pointer; }
-        .button.secondary { color: #1f6feb; background: white; }
+        .button { flex: 1; padding: 12px; border: 1px solid #176b87; border-radius: 7px; color: white; background: #21a7a0; text-align: center; text-decoration: none; font-weight: bold; cursor: pointer; }
+        .button.secondary { color: #176b87; background: white; }
         .error { padding: 20px; color: #a11426; background: #ffe8eb; border-radius: 8px; text-align: center; }
         @media print { body { padding: 0; background: white; } .receipt { box-shadow: none; } .actions { display: none; } }
         @media (max-width: 560px) { .receipt-body, .receipt-head { padding: 24px 20px; } .details { grid-template-columns: 1fr; } .actions { flex-direction: column; } }
     </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/clinic-theme.css">
 </head>
 <body>
     <main class="receipt">

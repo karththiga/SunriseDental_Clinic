@@ -23,10 +23,11 @@ public class BillServlet extends HttpServlet {
         HttpSession session =
                 request.getSession(false);
 
-        if (session == null
-                || session.getAttribute(
-                        "username"
-                ) == null) {
+        String role = session == null ? null : (String) session.getAttribute("role");
+        if (session == null || session.getAttribute("username") == null
+                || !("Admin".equalsIgnoreCase(role)
+                     || "Cashier".equalsIgnoreCase(role)
+                     || "Staff".equalsIgnoreCase(role))) {
 
             response.sendRedirect(
                     "login.jsp"

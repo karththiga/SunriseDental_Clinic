@@ -40,7 +40,7 @@
     <style>
         * { box-sizing: border-box; }
         body { margin: 0; font-family: Arial, sans-serif; background: #f4f7fb; color: #223; }
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 18px 40px; color: white; background: #1f6feb; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 18px 40px; color: white; background: #21a7a0; }
         .navbar-title { font-size: 22px; font-weight: bold; }
         .navbar a { color: white; text-decoration: none; font-weight: bold; }
         .container { max-width: 920px; margin: 38px auto; padding: 0 24px; }
@@ -49,14 +49,14 @@
         .subtitle { margin: 0 0 28px; color: #667; text-align: center; }
         .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 28px; }
         .step { padding: 12px; border-radius: 8px; color: #5f6c7b; background: #edf2f8; text-align: center; font-size: 13px; font-weight: bold; }
-        .step.active { color: #125ac1; background: #e4efff; }
+        .step.active { color: #176b87; background: #e9f8f5; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
         .field.full { grid-column: 1 / -1; }
         label { display: block; margin-bottom: 7px; font-weight: bold; }
         select, input { width: 100%; padding: 12px; border: 1px solid #c8d1dd; border-radius: 7px; font-size: 15px; background: white; }
         .hint { margin: 7px 0 0; color: #6c7886; font-size: 13px; }
-        .button { width: 100%; margin-top: 20px; padding: 13px; border: 0; border-radius: 7px; color: white; background: #1f6feb; cursor: pointer; font-size: 16px; font-weight: bold; }
-        .button:hover { background: #195fc8; }
+        .button { width: 100%; margin-top: 20px; padding: 13px; border: 0; border-radius: 7px; color: white; background: #21a7a0; cursor: pointer; font-size: 16px; font-weight: bold; }
+        .button:hover { background: #21a7a0; }
         .message { margin-bottom: 20px; padding: 13px; border-radius: 8px; text-align: center; }
         .error { color: #a11426; background: #ffe8eb; }
         .info { color: #775300; background: #fff5d8; }
@@ -65,12 +65,12 @@
         .slot-summary { margin: 0 0 18px; color: #667; }
         .slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 11px; }
         .slot input { position: absolute; opacity: 0; pointer-events: none; }
-        .slot span { display: block; padding: 12px 8px; border: 1px solid #bfcde0; border-radius: 8px; color: #205b9e; text-align: center; font-weight: bold; cursor: pointer; transition: .15s; }
-        .slot input:checked + span { color: white; background: #1f6feb; border-color: #1f6feb; box-shadow: 0 5px 13px rgba(31,111,235,.25); }
-        .slot span:hover { border-color: #1f6feb; }
+        .slot span { display: block; padding: 12px 8px; border: 1px solid #bfcde0; border-radius: 8px; color: #176b87; text-align: center; font-weight: bold; cursor: pointer; transition: .15s; }
+        .slot input:checked + span { color: white; background: #21a7a0; border-color: #176b87; box-shadow: 0 5px 13px rgba(33,167,160,.25); }
+        .slot span:hover { border-color: #176b87; }
         .empty { padding: 20px; color: #687687; background: #f5f7fa; border-radius: 8px; text-align: center; }
         .note { margin-top: 26px; padding: 16px; color: #365a47; background: #eaf8ef; border-radius: 8px; line-height: 1.5; }
-        .back-link { display: block; margin-top: 23px; color: #1f6feb; text-align: center; text-decoration: none; font-weight: bold; }
+        .back-link { display: block; margin-top: 23px; color: #176b87; text-align: center; text-decoration: none; font-weight: bold; }
         @media (max-width: 650px) {
             .navbar { padding: 15px 18px; }
             .navbar-title { font-size: 17px; }
@@ -82,6 +82,7 @@
             .steps { font-size: 11px; }
         }
     </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/clinic-theme.css">
 </head>
 
 <body>

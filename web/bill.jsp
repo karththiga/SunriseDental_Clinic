@@ -3,8 +3,11 @@
 <%
     String username =
             (String) session.getAttribute("username");
+    String role = (String) session.getAttribute("role");
 
-    if (username == null) {
+    if (username == null || !("Admin".equalsIgnoreCase(role)
+            || "Cashier".equalsIgnoreCase(role)
+            || "Staff".equalsIgnoreCase(role))) {
 
         response.sendRedirect(
                 "login.jsp"
@@ -64,8 +67,7 @@
 
         .navbar {
 
-            background:
-                #1f6feb;
+            background: #21a7a0;
 
             color:
                 white;
@@ -200,8 +202,7 @@
             border-radius:
                 7px;
 
-            background:
-                #1f6feb;
+            background: #21a7a0;
 
             color:
                 white;
@@ -335,8 +336,7 @@
             padding:
                 13px;
 
-            background:
-                #1f6feb;
+            background: #21a7a0;
 
             border:
                 none;
@@ -367,7 +367,7 @@
                 25px;
 
             color:
-                #1f6feb;
+                #176b87;
 
             text-decoration:
                 none;
@@ -408,6 +408,7 @@
 
     </style>
 
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/clinic-theme.css">
 </head>
 
 
@@ -420,7 +421,7 @@
         Sunrise Dental Clinic
     </div>
 
-    <a href="dashboard.jsp">
+    <a href="<%= "Admin".equalsIgnoreCase(role) ? "adminDashboard.jsp" : ("Cashier".equalsIgnoreCase(role) ? "cashierDashboard.jsp" : "dashboard.jsp") %>">
         Dashboard
     </a>
 
@@ -646,7 +647,7 @@
     %>
 
 
-    <a href="dashboard.jsp"
+    <a href="<%= "Admin".equalsIgnoreCase(role) ? "adminDashboard.jsp" : ("Cashier".equalsIgnoreCase(role) ? "cashierDashboard.jsp" : "dashboard.jsp") %>"
        class="back-link">
 
         ← Back to Dashboard

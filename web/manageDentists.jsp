@@ -60,7 +60,7 @@
         }
 
         .navbar {
-            background: #1f6feb;
+            background: #21a7a0;
             color: white;
             padding: 18px 40px;
 
@@ -130,7 +130,7 @@
 
             padding: 13px;
 
-            background: #1f6feb;
+            background: #21a7a0;
             color: white;
 
             border: none;
@@ -168,7 +168,7 @@
         }
 
         th {
-            background: #1f6feb;
+            background: #21a7a0;
             color: white;
 
             padding: 13px;
@@ -194,7 +194,7 @@
 
             text-align: center;
 
-            color: #1f6feb;
+            color: #176b87;
 
             text-decoration: none;
 
@@ -203,6 +203,7 @@
 
     </style>
 
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/clinic-theme.css">
 </head>
 
 

@@ -4,7 +4,11 @@
     String username =
             (String) session.getAttribute("username");
 
-    if (username == null) {
+    String role =
+            (String) session.getAttribute("role");
+
+    if (username == null
+            || !("Admin".equalsIgnoreCase(role) || "Staff".equalsIgnoreCase(role))) {
 
         response.sendRedirect("login.jsp");
 
@@ -47,7 +51,7 @@
         }
 
         .navbar {
-            background: #1f6feb;
+            background: #21a7a0;
             color: white;
             padding: 18px 40px;
 
@@ -111,7 +115,7 @@
 
         .search-form input:focus {
             outline: none;
-            border-color: #1f6feb;
+            border-color: #176b87;
         }
 
         .search-form button {
@@ -120,7 +124,7 @@
             border: none;
             border-radius: 7px;
 
-            background: #1f6feb;
+            background: #21a7a0;
             color: white;
 
             font-size: 16px;
@@ -153,7 +157,7 @@
 
         .result-box h2 {
             margin-top: 0;
-            color: #1f6feb;
+            color: #176b87;
             border-bottom: 1px solid #ddd;
             padding-bottom: 15px;
         }
@@ -184,8 +188,8 @@
 
             border-radius: 20px;
 
-            background: #e7f1ff;
-            color: #1f6feb;
+            background: #e9f8f5;
+            color: #176b87;
 
             font-weight: bold;
         }
@@ -198,7 +202,7 @@
             text-align: center;
 
             text-decoration: none;
-            color: #1f6feb;
+            color: #176b87;
 
             font-weight: bold;
         }
@@ -221,6 +225,7 @@
 
     </style>
 
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/clinic-theme.css">
 </head>
 
 <body>
@@ -228,10 +233,10 @@
 <div class="navbar">
 
     <div class="navbar-title">
-        Sunrise Dental Clinic
+        Sunrise Dental Clinic | Admin
     </div>
 
-    <a href="dashboard.jsp"
+    <a href="<%= "Admin".equalsIgnoreCase(role) ? "adminDashboard.jsp" : "dashboard.jsp" %>"
        class="dashboard-link">
 
         Dashboard
@@ -263,6 +268,8 @@
                 type="text"
                 name="appointmentNumber"
                 placeholder="Example: APT001"
+                value="<%= request.getParameter("appointmentNumber") == null
+                        ? "" : request.getParameter("appointmentNumber") %>"
                 required>
 
             <button type="submit">
@@ -454,6 +461,11 @@
 
         </div>
 
+        <a class="button"
+           href="${pageContext.request.contextPath}/UpdateAppointmentServlet?appointmentNumber=<%= request.getAttribute("appointmentNumber") %>">
+            Update this appointment
+        </a>
+
     </div>
 
     <%
@@ -461,7 +473,7 @@
     %>
 
 
-    <a href="dashboard.jsp"
+    <a href="<%= "Admin".equalsIgnoreCase(role) ? "adminDashboard.jsp" : "dashboard.jsp" %>"
        class="back-link">
 
         ← Back to Dashboard

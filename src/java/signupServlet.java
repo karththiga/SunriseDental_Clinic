@@ -50,7 +50,7 @@ public class signupServlet extends HttpServlet {
                 || confirmPassword.trim().isEmpty()) {
 
             response.sendRedirect(
-                    "signup.jsp?error=required"
+                    "HomeServlet?auth=signup&error=required"
             );
 
             return;
@@ -61,7 +61,7 @@ public class signupServlet extends HttpServlet {
         if (password.length() < 6) {
 
             response.sendRedirect(
-                    "signup.jsp?error=length"
+                    "HomeServlet?auth=signup&error=length"
             );
 
             return;
@@ -72,7 +72,7 @@ public class signupServlet extends HttpServlet {
         if (!password.equals(confirmPassword)) {
 
             response.sendRedirect(
-                    "signup.jsp?error=password"
+                    "HomeServlet?auth=signup&error=password"
             );
 
             return;
@@ -83,7 +83,7 @@ public class signupServlet extends HttpServlet {
         if (!phoneNumber.trim().matches("\\d{10}")) {
 
             response.sendRedirect(
-                    "signup.jsp?error=phone"
+                    "HomeServlet?auth=signup&error=phone"
             );
 
             return;
@@ -121,7 +121,7 @@ public class signupServlet extends HttpServlet {
                     if (rs.next()) {
 
                         response.sendRedirect(
-                                "signup.jsp?error=exists"
+                                "HomeServlet?auth=signup&error=exists"
                         );
 
                         return;
@@ -166,7 +166,7 @@ public class signupServlet extends HttpServlet {
 
                 stmt.setString(
                         5,
-                        password
+                        PasswordUtil.hash(password)
                 );
 
                 // New signup is always Patient
@@ -184,13 +184,13 @@ public class signupServlet extends HttpServlet {
 
                     // Send new patient to login page
                     response.sendRedirect(
-                            "login.jsp?registered=true"
+                            "HomeServlet?auth=login&registered=true"
                     );
 
                 } else {
 
                     response.sendRedirect(
-                            "signup.jsp?error=failed"
+                            "HomeServlet?auth=signup&error=failed"
                     );
                 }
             }
@@ -207,7 +207,7 @@ public class signupServlet extends HttpServlet {
                     );
 
             response.sendRedirect(
-                    "signup.jsp?error=database&param="
+                    "HomeServlet?auth=signup&error=database&param="
                     + errorMessage
             );
         }

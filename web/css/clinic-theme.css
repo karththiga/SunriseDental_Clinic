@@ -1,0 +1,292 @@
+:root {
+    --clinic-navy: #123047;
+    --clinic-blue: #176b87;
+    --clinic-teal: #21a7a0;
+    --clinic-mint: #e9f8f5;
+    --clinic-cream: #fbfaf6;
+    --clinic-text: #173042;
+    --clinic-muted: #607583;
+    --clinic-line: #dce9e8;
+    --clinic-danger: #b23a48;
+}
+
+body {
+    color: var(--clinic-text) !important;
+    background:
+        radial-gradient(circle at 92% 4%, rgba(33, 167, 160, .12), transparent 25%),
+        linear-gradient(145deg, #f8fcfb 0%, var(--clinic-cream) 52%, #eef8f6 100%) fixed !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    line-height: 1.6;
+}
+
+.navbar {
+    min-height: 78px;
+    padding: 14px max(30px, calc((100% - 1160px) / 2)) !important;
+    color: white !important;
+    background:
+        radial-gradient(circle at 85% 10%, rgba(33, 167, 160, .28), transparent 22%),
+        var(--clinic-navy) !important;
+    border-bottom: 3px solid var(--clinic-teal);
+    box-shadow: 0 8px 24px rgba(18, 48, 71, .18) !important;
+}
+
+.navbar-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    letter-spacing: -.01em;
+}
+
+.navbar-title::before {
+    content: "S";
+    width: 42px;
+    height: 42px;
+    display: inline-grid;
+    flex: 0 0 42px;
+    place-items: center;
+    border-radius: 13px 13px 18px 18px;
+    color: white;
+    background: linear-gradient(145deg, var(--clinic-teal), var(--clinic-blue));
+    box-shadow: 0 7px 18px rgba(0, 0, 0, .18);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 23px;
+}
+
+h1, h2 {
+    color: var(--clinic-navy);
+    font-family: Georgia, "Times New Roman", serif !important;
+}
+
+.navbar h1, .navbar h2,
+.receipt-head h1, .receipt-head h2 {
+    color: inherit;
+}
+
+.container {
+    width: min(1180px, calc(100% - 32px)) !important;
+    max-width: 1180px !important;
+    margin-top: 46px !important;
+    margin-bottom: 55px !important;
+}
+
+.box, .welcome, .welcome-box, .menu-card, .card,
+.login-box, .form-container, .search-box, .bill-container {
+    border: 1px solid var(--clinic-line) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 10px 30px rgba(18, 48, 71, .08) !important;
+}
+
+.welcome, .welcome-box {
+    position: relative;
+    overflow: hidden;
+    padding: 34px 36px !important;
+    background:
+        radial-gradient(circle at 92% 10%, rgba(33, 167, 160, .2), transparent 28%),
+        linear-gradient(120deg, white, #effaf7) !important;
+    border-left: 5px solid var(--clinic-teal) !important;
+}
+
+.welcome::after, .welcome-box::after {
+    content: "";
+    position: absolute;
+    width: 130px;
+    height: 130px;
+    right: -55px;
+    bottom: -75px;
+    border: 18px solid rgba(33, 167, 160, .08);
+    border-radius: 50%;
+}
+
+.welcome h1, .welcome-box h1 {
+    margin-bottom: 7px !important;
+    font-size: clamp(30px, 4vw, 42px) !important;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 34px !important;
+    color: var(--clinic-navy) !important;
+}
+
+.section-title::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--clinic-teal);
+}
+
+.menu-grid {
+    gap: 22px !important;
+}
+
+.menu-card, .card {
+    position: relative;
+    overflow: hidden;
+    min-height: 155px;
+    padding: 27px !important;
+    background: rgba(255, 255, 255, .94) !important;
+}
+
+.menu-card::before, .card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 4px;
+    background: linear-gradient(90deg, var(--clinic-teal), var(--clinic-blue));
+}
+
+.menu-card:hover, .card:hover {
+    transform: translateY(-5px) !important;
+    border-color: #b9dcda !important;
+    box-shadow: 0 16px 34px rgba(18, 48, 71, .13) !important;
+}
+
+.menu-card h3, .card h3 {
+    color: var(--clinic-navy) !important;
+}
+
+.subtitle, .welcome p, .welcome-box p, .menu-card p, .card p {
+    color: var(--clinic-muted) !important;
+}
+
+button, input[type="submit"], .button, .submit-btn, .load-btn,
+.confirm-btn, .assign-btn, .search-form button, .bill-form button {
+    border-radius: 9px !important;
+    color: white !important;
+    background: var(--clinic-teal) !important;
+    border-color: var(--clinic-teal) !important;
+    transition: transform .18s, box-shadow .18s, background .18s !important;
+}
+
+button:hover, input[type="submit"]:hover, .button:hover, .submit-btn:hover,
+.load-btn:hover, .confirm-btn:hover, .assign-btn:hover {
+    background: var(--clinic-navy) !important;
+    box-shadow: 0 8px 18px rgba(33, 167, 160, .2) !important;
+    transform: translateY(-1px);
+}
+
+.button.secondary {
+    color: var(--clinic-navy) !important;
+    background: white !important;
+    border-color: #b9dcda !important;
+}
+
+.reject-btn {
+    background: var(--clinic-danger) !important;
+}
+
+input, select, textarea {
+    border-color: #bfd3d3 !important;
+    border-radius: 9px !important;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--clinic-teal) !important;
+    outline: 3px solid rgba(33, 167, 160, .12) !important;
+}
+
+th {
+    color: white !important;
+    background: var(--clinic-navy) !important;
+}
+
+.receipt-head, .today-card {
+    color: white !important;
+    background:
+        radial-gradient(circle at 85% 10%, rgba(33, 167, 160, .28), transparent 28%),
+        var(--clinic-navy) !important;
+}
+
+.appointment-number, .step.active, .status-badge {
+    color: var(--clinic-navy) !important;
+    background: var(--clinic-mint) !important;
+    border-color: #8fc8c4 !important;
+}
+
+.slot span {
+    color: var(--clinic-blue) !important;
+    border-color: #b9dcda !important;
+}
+
+.slot input:checked + span {
+    color: white !important;
+    background: var(--clinic-teal) !important;
+    border-color: var(--clinic-teal) !important;
+    box-shadow: 0 6px 16px rgba(33, 167, 160, .25) !important;
+}
+
+.result-box .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 22px;
+    padding: 11px 18px;
+    text-decoration: none;
+}
+
+.undo-btn {
+    background: var(--clinic-navy) !important;
+}
+
+table {
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+td {
+    border-color: var(--clinic-line) !important;
+}
+
+tr:hover td {
+    background: #f1faf8;
+}
+
+.logout {
+    color: var(--clinic-blue) !important;
+    background: white !important;
+    border-radius: 9px !important;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .12);
+}
+
+.navbar a:not(.logout) {
+    color: white !important;
+}
+
+.back-link, .signup-link a,
+.container a:not(.card):not(.menu-card):not(.logout) {
+    color: var(--clinic-blue);
+}
+
+.message.success, .success {
+    color: #176b4a !important;
+    background: var(--clinic-mint) !important;
+}
+
+.message.error, .error {
+    color: #9d2638 !important;
+    background: #ffeaed !important;
+}
+
+@media (max-width: 650px) {
+    .navbar {
+        padding: 15px 18px !important;
+    }
+
+    .navbar-title {
+        font-size: 17px !important;
+    }
+
+    .navbar-title::before {
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
+        font-size: 20px;
+    }
+
+    .container {
+        margin-top: 28px !important;
+    }
+}

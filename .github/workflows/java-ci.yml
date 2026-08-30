@@ -1,0 +1,19 @@
+name: Java CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  automated-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Run automated business-rule tests
+        run: bash scripts/run-tests.sh

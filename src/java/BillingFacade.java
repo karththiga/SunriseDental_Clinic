@@ -82,11 +82,8 @@ public class BillingFacade {
                 + "WHERE a.appointment_number = ?";
 
         try (
-            Connection conn =
-                    DBConnection.getConnection();
-
-            PreparedStatement stmt =
-                    conn.prepareStatement(sql)
+            Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
 
             stmt.setString(
@@ -178,47 +175,29 @@ public class BillingFacade {
 
         String sql =
                 "INSERT INTO bills "
-                + "(appointment_id, "
-                + "treatment_cost, "
-                + "consultation_fee, "
-                + "total_amount, "
-                + "payment_status) "
-                + "VALUES (?, ?, ?, ?, ?)";
+                + "(appointment_id,treatment_cost,consultation_fee,"
+                + "total_amount,payment_status) VALUES (?,?,?,?,?)";
 
-        try (
-            Connection conn =
-                    DBConnection.getConnection();
+        try (Connection conn = DBConnection.getConnection()) {
+            // Printing an existing receipt must not create another bill.
+            try (PreparedStatement existing = conn.prepareStatement(
+                    "SELECT bill_id FROM bills WHERE appointment_id=? LIMIT 1")) {
+                existing.setInt(1, bill.getAppointmentId());
+                try (ResultSet rs = existing.executeQuery()) {
+                    if (rs.next()) {
+                        return;
+                    }
+                }
+            }
 
-            PreparedStatement stmt =
-                    conn.prepareStatement(sql)
-        ) {
-
-            stmt.setInt(
-                    1,
-                    bill.getAppointmentId()
-            );
-
-            stmt.setDouble(
-                    2,
-                    bill.getTreatmentCost()
-            );
-
-            stmt.setDouble(
-                    3,
-                    bill.getConsultationFee()
-            );
-
-            stmt.setDouble(
-                    4,
-                    bill.getTotalAmount()
-            );
-
-            stmt.setString(
-                    5,
-                    "Paid"
-            );
-
-            stmt.executeUpdate();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, bill.getAppointmentId());
+                stmt.setDouble(2, bill.getTreatmentCost());
+                stmt.setDouble(3, bill.getConsultationFee());
+                stmt.setDouble(4, bill.getTotalAmount());
+                stmt.setString(5, "Paid");
+                stmt.executeUpdate();
+            }
         }
     }
 }

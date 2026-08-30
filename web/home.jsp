@@ -8,6 +8,9 @@
     Boolean clinicOpen = (Boolean) request.getAttribute("clinicOpen");
     Boolean scheduleUnavailable =
             (Boolean) request.getAttribute("scheduleUnavailable");
+    String authModal = request.getParameter("auth");
+    String authError = request.getParameter("error");
+    boolean registered = "true".equals(request.getParameter("registered"));
 %>
 
 <!DOCTYPE html>
@@ -277,6 +280,49 @@
         footer { padding: 32px 0; background: #0c2638; color: #bcd0d7; font-size: 13px; }
         .footer-inner { display: flex; justify-content: space-between; gap: 25px; }
 
+        .auth-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 22px;
+            background: rgba(8, 31, 46, .7);
+            backdrop-filter: blur(6px);
+        }
+
+        .auth-modal.open { display: flex; }
+
+        .auth-dialog {
+            position: relative;
+            width: min(500px, 100%);
+            max-height: calc(100vh - 44px);
+            overflow-y: auto;
+            padding: 34px;
+            border: 1px solid rgba(255,255,255,.65);
+            border-radius: 20px;
+            background: white;
+            box-shadow: 0 28px 75px rgba(8,31,46,.3);
+        }
+
+        .auth-dialog.signup-dialog { width: min(700px, 100%); }
+        .auth-dialog h2 { margin: 10px 0 5px; color: var(--navy); font-family: Georgia, serif; font-size: 32px; }
+        .auth-subtitle { margin: 0 0 24px; color: var(--muted); }
+        .modal-close { position: absolute; top: 16px; right: 18px; width: 36px; height: 36px; border: 0; border-radius: 50%; color: var(--navy); background: #edf5f4; cursor: pointer; font-size: 24px; line-height: 1; }
+        .auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .auth-field.full { grid-column: 1 / -1; }
+        .auth-field label { display: block; margin-bottom: 6px; color: var(--navy); font-size: 13px; font-weight: 800; }
+        .auth-field input { width: 100%; padding: 12px 13px; border: 1px solid #bfd3d3; border-radius: 9px; font-size: 15px; }
+        .auth-field input:focus { border-color: var(--teal); outline: 3px solid rgba(33,167,160,.12); }
+        .auth-submit { width: 100%; margin-top: 20px; min-height: 47px; border: 0; border-radius: 9px; color: white; background: var(--blue); cursor: pointer; font-size: 16px; font-weight: 800; }
+        .auth-submit:hover { background: var(--teal); }
+        .auth-switch { margin: 20px 0 0; color: var(--muted); text-align: center; font-size: 14px; }
+        .auth-switch button { padding: 0; border: 0; color: var(--blue); background: transparent; cursor: pointer; font-weight: 800; }
+        .auth-message { margin-bottom: 18px; padding: 11px 13px; border-radius: 8px; text-align: center; font-size: 14px; }
+        .auth-message.error { color: #a12638; background: #ffeaed; }
+        .auth-message.success { color: #176b4a; background: var(--mint); }
+
         @media (max-width: 900px) {
             .nav-links a:not(.button) { display: none; }
             .hero-grid, .about-grid, .schedule-wrap { grid-template-columns: 1fr; }
@@ -300,6 +346,9 @@
             .doctor-card { grid-template-columns: 42px 1fr; }
             .doctor-time { grid-column: 2; text-align: left; }
             .cta-inner, .footer-inner { align-items: flex-start; flex-direction: column; }
+            .auth-dialog { padding: 28px 20px; }
+            .auth-grid { grid-template-columns: 1fr; }
+            .auth-field.full { grid-column: auto; }
         }
     </style>
 </head>
@@ -308,7 +357,7 @@
     <div class="topbar">
         <div class="container topbar-inner">
             <span>Compassionate dental care for every smile</span>
-            <span>Appointments are subject to doctor confirmation</span>
+            <span>Reserve available doctor time slots online</span>
         </div>
     </div>
 
@@ -326,7 +375,7 @@
                 <a href="#about">About</a>
                 <a href="#visiting-hours">Visiting hours</a>
                 <a href="#announcements">Announcements</a>
-                <a class="button" href="${pageContext.request.contextPath}/login.jsp">Login</a>
+                <a class="button" href="#loginModal" data-modal-open="loginModal">Login</a>
             </nav>
         </div>
     </header>
@@ -342,7 +391,7 @@
                         and patient-centred oral healthcare for the whole family.
                     </p>
                     <div class="hero-actions">
-                        <a class="button" href="${pageContext.request.contextPath}/login.jsp">Login to your account</a>
+                        <a class="button" href="#loginModal" data-modal-open="loginModal">Login to your account</a>
                         <a class="button secondary" href="#visiting-hours">Today's doctors</a>
                     </div>
                 </div>
@@ -383,7 +432,7 @@
                     <div class="feature-grid">
                         <article class="feature"><span class="feature-number">01</span><h3>Qualified dental team</h3><p>Choose a dentist according to the treatment you need.</p></article>
                         <article class="feature"><span class="feature-number">02</span><h3>Simple appointments</h3><p>Registered patients can request and follow appointments online.</p></article>
-                        <article class="feature"><span class="feature-number">03</span><h3>Coordinated care</h3><p>Clinic staff and dentists review each request before confirmation.</p></article>
+                        <article class="feature"><span class="feature-number">03</span><h3>Instant confirmation</h3><p>Patients reserve a live available slot and receive an appointment confirmation immediately.</p></article>
                         <article class="feature"><span class="feature-number">04</span><h3>Clear billing</h3><p>Treatment charges and consultation fees are presented together.</p></article>
                     </div>
                 </div>
@@ -414,7 +463,7 @@
                                         <h3><%= dentist.get("name") %></h3>
                                         <p><%= dentist.get("specialization") %></p>
                                     </div>
-                                    <div class="doctor-time"><%= dentist.get("visitingHours") %></div>
+                                    <div class="doctor-time"><%= dentist.get("visitingHours") %><br><small><%= dentist.get("availableSlots") %> live slot(s) remaining</small></div>
                                 </article>
                         <%  }
                            } else { %>
@@ -467,7 +516,7 @@
     <section class="cta">
         <div class="container cta-inner">
             <div><h2>Ready to manage your dental care?</h2><p>Login to request an appointment or access your clinic dashboard.</p></div>
-            <a class="button" href="${pageContext.request.contextPath}/login.jsp">Continue to login</a>
+            <a class="button" href="#loginModal" data-modal-open="loginModal">Continue to login</a>
         </div>
     </section>
 
@@ -477,5 +526,150 @@
             <span>Care · Comfort · Confidence</span>
         </div>
     </footer>
+
+    <div class="auth-modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+        <div class="auth-dialog">
+            <button class="modal-close" type="button" data-modal-close aria-label="Close">×</button>
+            <span class="eyebrow">Patient & staff access</span>
+            <h2 id="loginTitle">Welcome back</h2>
+            <p class="auth-subtitle">Login to access your Sunrise Dental Clinic dashboard.</p>
+
+            <% if (registered) { %>
+                <div class="auth-message success">Account created successfully. You can now login.</div>
+            <% } %>
+            <% if ("login".equals(authModal) && authError != null) { %>
+                <div class="auth-message error">
+                    <% if ("required".equals(authError)) { %>
+                        Please enter your email and password.
+                    <% } else if ("database".equals(authError)) { %>
+                        The login service is temporarily unavailable.
+                    <% } else if ("invalidrole".equals(authError)) { %>
+                        Your account role is not supported.
+                    <% } else { %>
+                        Invalid email address or password.
+                    <% } %>
+                </div>
+            <% } %>
+
+            <form action="${pageContext.request.contextPath}/LoginServlet" method="post">
+                <div class="auth-grid">
+                    <div class="auth-field full">
+                        <label for="loginUsername">Email address</label>
+                        <input id="loginUsername" type="email" name="username" autocomplete="username" required>
+                    </div>
+                    <div class="auth-field full">
+                        <label for="loginPassword">Password</label>
+                        <input id="loginPassword" type="password" name="password" autocomplete="current-password" required>
+                    </div>
+                </div>
+                <button class="auth-submit" type="submit">Login</button>
+            </form>
+
+            <p class="auth-switch">New patient? <button type="button" data-modal-switch="signupModal">Create an account</button></p>
+        </div>
+    </div>
+
+    <div class="auth-modal" id="signupModal" role="dialog" aria-modal="true" aria-labelledby="signupTitle">
+        <div class="auth-dialog signup-dialog">
+            <button class="modal-close" type="button" data-modal-close aria-label="Close">×</button>
+            <span class="eyebrow">New patient registration</span>
+            <h2 id="signupTitle">Create your account</h2>
+            <p class="auth-subtitle">Register to reserve appointments and view confirmations online.</p>
+
+            <% if ("signup".equals(authModal) && authError != null) { %>
+                <div class="auth-message error">
+                    <% if ("required".equals(authError)) { %>Please complete all fields.
+                    <% } else if ("length".equals(authError)) { %>Password must contain at least 6 characters.
+                    <% } else if ("password".equals(authError)) { %>The password confirmation does not match.
+                    <% } else if ("phone".equals(authError)) { %>Phone number must contain exactly 10 digits.
+                    <% } else if ("exists".equals(authError)) { %>An account already exists for this email address.
+                    <% } else { %>Unable to create your account. Please try again.
+                    <% } %>
+                </div>
+            <% } %>
+
+            <form action="${pageContext.request.contextPath}/SignupServlet" method="post">
+                <div class="auth-grid">
+                    <div class="auth-field">
+                        <label for="firstName">First name</label>
+                        <input id="firstName" type="text" name="firstName" autocomplete="given-name" required>
+                    </div>
+                    <div class="auth-field">
+                        <label for="lastName">Last name</label>
+                        <input id="lastName" type="text" name="lastName" autocomplete="family-name" required>
+                    </div>
+                    <div class="auth-field full">
+                        <label for="signupUsername">Email address</label>
+                        <input id="signupUsername" type="email" name="username" autocomplete="email" required>
+                    </div>
+                    <div class="auth-field full">
+                        <label for="phoneNumber">Phone number</label>
+                        <input id="phoneNumber" type="tel" name="phoneNumber" inputmode="numeric" pattern="[0-9]{10}" autocomplete="tel" required>
+                    </div>
+                    <div class="auth-field">
+                        <label for="signupPassword">Password</label>
+                        <input id="signupPassword" type="password" name="password" minlength="6" autocomplete="new-password" required>
+                    </div>
+                    <div class="auth-field">
+                        <label for="confirmPassword">Confirm password</label>
+                        <input id="confirmPassword" type="password" name="confirmPassword" minlength="6" autocomplete="new-password" required>
+                    </div>
+                </div>
+                <button class="auth-submit" type="submit">Create patient account</button>
+            </form>
+
+            <p class="auth-switch">Already registered? <button type="button" data-modal-switch="loginModal">Login instead</button></p>
+        </div>
+    </div>
+
+    <script>
+        const closeModals = () => {
+            document.querySelectorAll('.auth-modal.open')
+                    .forEach(modal => modal.classList.remove('open'));
+            document.body.style.overflow = '';
+        };
+
+        const openModal = id => {
+            closeModals();
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.add('open');
+                document.body.style.overflow = 'hidden';
+                const firstInput = modal.querySelector('input');
+                if (firstInput) firstInput.focus();
+            }
+        };
+
+        document.querySelectorAll('[data-modal-open]').forEach(trigger => {
+            trigger.addEventListener('click', event => {
+                event.preventDefault();
+                openModal(trigger.dataset.modalOpen);
+            });
+        });
+
+        document.querySelectorAll('[data-modal-close]').forEach(trigger => {
+            trigger.addEventListener('click', closeModals);
+        });
+
+        document.querySelectorAll('[data-modal-switch]').forEach(trigger => {
+            trigger.addEventListener('click', () => openModal(trigger.dataset.modalSwitch));
+        });
+
+        document.querySelectorAll('.auth-modal').forEach(modal => {
+            modal.addEventListener('click', event => {
+                if (event.target === modal) closeModals();
+            });
+        });
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape') closeModals();
+        });
+
+        <% if ("signup".equals(authModal)) { %>
+            openModal('signupModal');
+        <% } else if ("login".equals(authModal) || registered) { %>
+            openModal('loginModal');
+        <% } %>
+    </script>
 </body>
 </html>

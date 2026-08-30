@@ -42,7 +42,7 @@
         }
 
         .navbar {
-            background: #1f6feb;
+            background: #21a7a0;
             color: white;
             padding: 18px 40px;
             display: flex;
@@ -52,7 +52,7 @@
 
         .logout {
             background: white;
-            color: #1f6feb;
+            color: #176b87;
             padding: 9px 18px;
             border-radius: 6px;
             text-decoration: none;
@@ -72,8 +72,15 @@
             box-shadow: 0 5px 18px rgba(0,0,0,0.08);
         }
 
+        .section-title { margin-top: 30px; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px; }
+        .card { padding: 25px; color: #222; background: white; border-radius: 12px; text-decoration: none; }
+        .card h3 { margin: 0 0 9px; }
+        .card p { margin: 0; }
+
     </style>
 
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/clinic-theme.css">
 </head>
 
 <body>
@@ -104,9 +111,15 @@
         </p>
 
         <p>
-            Cashier functions will be added later.
+            Search patient appointments and prepare printable bills.
         </p>
 
+    </div>
+
+    <h2 class="section-title">Cashier Services</h2>
+    <div class="menu-grid">
+        <a class="card" href="bill.jsp"><h3>Billing</h3><p>Calculate treatment and consultation charges and print the patient receipt.</p></a>
+        <a class="card" href="help.jsp"><h3>Help</h3><p>View step-by-step instructions for clinic workflows and safe logout.</p></a>
     </div>
 
 </div>

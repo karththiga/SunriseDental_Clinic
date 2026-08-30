@@ -28,7 +28,9 @@ public class SearchAppointmentServlet
                 request.getSession(false);
 
         if (session == null
-                || session.getAttribute("username") == null) {
+                || session.getAttribute("username") == null
+                || !("Admin".equalsIgnoreCase((String) session.getAttribute("role"))
+                     || "Staff".equalsIgnoreCase((String) session.getAttribute("role")))) {
 
             response.sendRedirect("login.jsp");
 
@@ -45,12 +47,6 @@ public class SearchAppointmentServlet
 
         if (appointmentNumber == null
                 || appointmentNumber.trim().isEmpty()) {
-
-            request.setAttribute(
-                    "error",
-                    "Please enter an appointment number."
-            );
-
             request.getRequestDispatcher(
                     "searchAppointment.jsp"
             ).forward(request, response);

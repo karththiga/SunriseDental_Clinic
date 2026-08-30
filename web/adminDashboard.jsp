@@ -49,7 +49,7 @@
         }
 
         .navbar {
-            background: #1f6feb;
+            background: #21a7a0;
             color: white;
             padding: 18px 40px;
 
@@ -71,7 +71,7 @@
 
         .logout {
             background: white;
-            color: #1f6feb;
+            color: #176b87;
 
             padding: 9px 18px;
 
@@ -151,7 +151,7 @@
             margin-top: 0;
             margin-bottom: 10px;
 
-            color: #1f6feb;
+            color: #176b87;
         }
 
         .menu-card p {
@@ -162,6 +162,7 @@
 
     </style>
 
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/clinic-theme.css">
 </head>
 
 <body>
@@ -218,37 +219,22 @@
     <div class="menu-grid">
 
 
-       <a href="${pageContext.request.contextPath}/ManageUsersServlet"
+       <a href="${pageContext.request.contextPath}/ManagePeopleServlet"
            class="menu-card">
 
             <h3>
-                Manage Users
+                Manage People
             </h3>
 
             <p>
-                View and manage patient,
-                dentist and cashier accounts.
+                Manage user accounts, dentist profiles,
+                schedules and treatment assignments.
             </p>
 
         </a>
 
 
-        <a href="${pageContext.request.contextPath}/ManageDentistsServlet"
-           class="menu-card">
-
-            <h3>
-                Manage Dentists
-            </h3>
-
-            <p>
-                Add, update and view
-                dentist information.
-            </p>
-
-        </a>
-
-
-        <a href="#"
+        <a href="${pageContext.request.contextPath}/ManageTreatmentsServlet"
            class="menu-card">
 
             <h3>
@@ -263,22 +249,22 @@
         </a>
 
 
-        <a href="#"
+        <a href="${pageContext.request.contextPath}/ManageAppointmentsServlet"
            class="menu-card">
 
             <h3>
-                View Appointments
+                Manage Appointments
             </h3>
 
             <p>
-                View all registered
-                patient appointments.
+                Search, review and edit all
+                patient appointments in one place.
             </p>
 
         </a>
 
 
-        <a href="reports.jsp"
+        <a href="${pageContext.request.contextPath}/ReportsServlet"
            class="menu-card">
 
             <h3>
@@ -293,7 +279,7 @@
         </a>
 
 
-        <a href="#"
+        <a href="help.jsp"
            class="menu-card">
 
             <h3>

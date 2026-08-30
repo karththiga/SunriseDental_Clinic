@@ -61,7 +61,7 @@
     }
 
     .navbar {
-        background: #1f6feb;
+        background: #21a7a0;
         color: white;
 
         padding: 18px 40px;
@@ -131,7 +131,7 @@
     }
 
     th {
-        background: #1f6feb;
+        background: #21a7a0;
         color: white;
 
         padding: 12px;
@@ -150,7 +150,7 @@
     }
 
     .assign-btn {
-        background: #1f6feb;
+        background: #21a7a0;
         color: white;
 
         border: none;
@@ -175,6 +175,7 @@
 
 </style>
 
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/clinic-theme.css">
 </head>
 
 

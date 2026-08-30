@@ -96,7 +96,7 @@
             padding: 13px;
             border: none;
             border-radius: 7px;
-            background: #1f6feb;
+            background: #21a7a0;
             color: white;
             font-size: 16px;
             cursor: pointer;
@@ -124,11 +124,12 @@
             text-align: center;
             margin-top: 20px;
             text-decoration: none;
-            color: #1f6feb;
+            color: #176b87;
         }
 
     </style>
 
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/clinic-theme.css">
 </head>
 
 <body>

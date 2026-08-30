@@ -1,11 +1,7 @@
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +45,7 @@ public class HomeServlet extends HttpServlet {
                 getVisitingHours(day)
         );
 
-        loadActiveDentists(request, day);
+        loadActiveDentists(request, today);
 
         request.getRequestDispatcher("/home.jsp")
                 .forward(request, response);
@@ -69,54 +65,25 @@ public class HomeServlet extends HttpServlet {
 
     private void loadActiveDentists(
             HttpServletRequest request,
-            DayOfWeek day) {
+            LocalDate date) {
         List<Map<String, String>> dentists = new ArrayList<>();
 
-        String sql =
-                "SELECT dentist_name, specialization, "
-                + "available_from, available_to "
-                + "FROM dentists "
-                + "WHERE status = 'Active' "
-                + "AND LOWER(available_day) = LOWER(?) "
-                + "AND available_from IS NOT NULL "
-                + "AND available_to IS NOT NULL "
-                + "ORDER BY dentist_name";
-
-        try (
-            Connection conn = DBConnection.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)
-        ) {
-            stmt.setString(1, day.name());
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Map<String, String> dentist = new HashMap<>();
-                    dentist.put(
-                            "name",
-                            escapeHtml(rs.getString("dentist_name"))
-                    );
-
-                    String specialization = rs.getString("specialization");
-                    dentist.put(
-                            "specialization",
-                            specialization == null || specialization.trim().isEmpty()
-                                    ? "General Dentistry"
-                                    : escapeHtml(specialization)
-                    );
-
-                    LocalTime from = rs.getTime("available_from").toLocalTime();
-                    LocalTime to = rs.getTime("available_to").toLocalTime();
-                    DateTimeFormatter timeFormat =
-                            DateTimeFormatter.ofPattern("h:mm a");
-                    dentist.put(
-                            "visitingHours",
-                            from.format(timeFormat) + " - " + to.format(timeFormat)
-                    );
-
-                    dentists.add(dentist);
-                }
+        try {
+            DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("h:mm a");
+            for (ScheduleEntry entry : new ClinicScheduleService().getSchedule(date)) {
+                Map<String, String> dentist = new HashMap<>();
+                dentist.put("name", escapeHtml(entry.getDentistName()));
+                String specialization = entry.getSpecialization();
+                dentist.put("specialization",
+                        specialization == null || specialization.trim().isEmpty()
+                                ? "General Dentistry" : escapeHtml(specialization));
+                dentist.put("visitingHours",
+                        entry.getAvailableFrom().format(timeFormat) + " - "
+                        + entry.getAvailableTo().format(timeFormat));
+                dentist.put("availableSlots", String.valueOf(entry.getAvailableSlots()));
+                dentists.add(dentist);
             }
-        } catch (SQLException e) {
+        } catch (SQLException | IllegalArgumentException e) {
             // The public homepage must remain available even when the
             // database is temporarily unavailable.
             getServletContext().log(

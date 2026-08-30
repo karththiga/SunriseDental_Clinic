@@ -31,7 +31,7 @@ public class loginServlet extends HttpServlet {
                 || password == null || password.trim().isEmpty()) {
 
             response.sendRedirect(
-                    "login.jsp?error=required"
+                    "HomeServlet?auth=login&error=required"
             );
 
             return;
@@ -39,7 +39,7 @@ public class loginServlet extends HttpServlet {
 
         String sql =
                 "SELECT * FROM users "
-                + "WHERE username = ? AND password = ?";
+                + "WHERE username = ?";
 
         try (
             Connection conn =
@@ -54,15 +54,19 @@ public class loginServlet extends HttpServlet {
                     username.trim()
             );
 
-            stmt.setString(
-                    2,
-                    password
-            );
-
             ResultSet rs =
                     stmt.executeQuery();
 
-            if (rs.next()) {
+            if (rs.next() && PasswordUtil.verify(password, rs.getString("password"))) {
+
+                if (PasswordUtil.needsUpgrade(rs.getString("password"))) {
+                    try (PreparedStatement upgrade = conn.prepareStatement(
+                            "UPDATE users SET password=? WHERE user_id=?")) {
+                        upgrade.setString(1, PasswordUtil.hash(password));
+                        upgrade.setInt(2, rs.getInt("user_id"));
+                        upgrade.executeUpdate();
+                    }
+                }
 
                 HttpSession session =
                         request.getSession();
@@ -121,20 +125,26 @@ public class loginServlet extends HttpServlet {
                             "patientDashboard.jsp"
                     );
 
+                } else if ("Staff".equalsIgnoreCase(role)) {
+
+                    response.sendRedirect(
+                            "dashboard.jsp"
+                    );
+
                 } else {
 
                     // Unknown role
                     session.invalidate();
 
                     response.sendRedirect(
-                            "login.jsp?error=invalidrole"
+                            "HomeServlet?auth=login&error=invalidrole"
                     );
                 }
 
             } else {
 
                 response.sendRedirect(
-                        "login.jsp?error=invalid"
+                        "HomeServlet?auth=login&error=invalid"
                 );
             }
 
@@ -143,7 +153,7 @@ public class loginServlet extends HttpServlet {
             e.printStackTrace();
 
             response.sendRedirect(
-                    "login.jsp?error=database"
+                    "HomeServlet?auth=login&error=database"
             );
         }
     }

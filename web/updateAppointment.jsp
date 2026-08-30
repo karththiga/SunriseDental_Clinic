@@ -1,10 +1,16 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.Map"%>
 
 <%
     String username =
             (String) session.getAttribute("username");
 
-    if (username == null) {
+    String role =
+            (String) session.getAttribute("role");
+
+    if (username == null
+            || !("Admin".equalsIgnoreCase(role) || "Staff".equalsIgnoreCase(role))) {
 
         response.sendRedirect("login.jsp");
         return;
@@ -27,6 +33,12 @@
 
     Boolean canUndo =
             (Boolean) request.getAttribute("canUndo");
+
+    List<Map<String, Object>> dentists =
+            (List<Map<String, Object>>) request.getAttribute("dentists");
+
+    List<Map<String, Object>> treatments =
+            (List<Map<String, Object>>) request.getAttribute("treatments");
 %>
 
 <!DOCTYPE html>
@@ -57,7 +69,7 @@
         }
 
         .navbar {
-            background: #1f6feb;
+            background: #21a7a0;
             color: white;
             padding: 18px 40px;
             display: flex;
@@ -88,12 +100,6 @@
             text-align: center;
         }
 
-        .search-form {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-
         input,
         select {
             width: 100%;
@@ -102,14 +108,10 @@
             border-radius: 7px;
         }
 
-        .search-form input {
-            flex: 1;
-        }
-
         button {
             padding: 12px 20px;
             border: none;
-            background: #1f6feb;
+            background: #21a7a0;
             color: white;
             border-radius: 7px;
             cursor: pointer;
@@ -158,18 +160,19 @@
 
     </style>
 
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/clinic-theme.css">
 </head>
 
 <body>
 
 <div class="navbar">
 
-    <strong>
-        Sunrise Dental Clinic
-    </strong>
+    <div class="navbar-title">
+        Sunrise Dental Clinic | Admin
+    </div>
 
-    <a href="dashboard.jsp">
-        Dashboard
+    <a href="${pageContext.request.contextPath}/ManageAppointmentsServlet">
+        Manage Appointments
     </a>
 
 </div>
@@ -182,24 +185,6 @@
     <h1>
         Update Appointment
     </h1>
-
-
-    <form
-        class="search-form"
-        action="${pageContext.request.contextPath}/UpdateAppointmentServlet"
-        method="get">
-
-        <input
-            type="text"
-            name="appointmentNumber"
-            placeholder="Enter appointment number"
-            required>
-
-        <button type="submit">
-            Search
-        </button>
-
-    </form>
 
 
     <%
@@ -292,31 +277,21 @@
                 required>
 
 
-                <option value="1"
-                    <%= dentistId != null && dentistId == 1
-                        ? "selected" : "" %>>
-
-                    Dr. Nimal Fernando
-
-                </option>
-
-
-                <option value="2"
-                    <%= dentistId != null && dentistId == 2
-                        ? "selected" : "" %>>
-
-                    Dr. Sarah Silva
-
-                </option>
-
-
-                <option value="3"
-                    <%= dentistId != null && dentistId == 3
-                        ? "selected" : "" %>>
-
-                    Dr. Kamal Perera
-
-                </option>
+                <%
+                    if (dentists != null) {
+                        for (Map<String, Object> dentist : dentists) {
+                            Integer optionId =
+                                    (Integer) dentist.get("dentistId");
+                %>
+                    <option value="<%= optionId %>"
+                        <%= optionId.equals(dentistId) ? "selected" : "" %>>
+                        <%= dentist.get("dentistName") %>
+                        — <%= dentist.get("availableDay") %>
+                    </option>
+                <%
+                        }
+                    }
+                %>
 
 
             </select>
@@ -335,49 +310,20 @@
                 required>
 
 
-                <option value="1"
-                    <%= treatmentId != null && treatmentId == 1
-                        ? "selected" : "" %>>
-
-                    Dental Consultation
-
-                </option>
-
-
-                <option value="2"
-                    <%= treatmentId != null && treatmentId == 2
-                        ? "selected" : "" %>>
-
-                    Teeth Cleaning
-
-                </option>
-
-
-                <option value="3"
-                    <%= treatmentId != null && treatmentId == 3
-                        ? "selected" : "" %>>
-
-                    Tooth Filling
-
-                </option>
-
-
-                <option value="4"
-                    <%= treatmentId != null && treatmentId == 4
-                        ? "selected" : "" %>>
-
-                    Tooth Extraction
-
-                </option>
-
-
-                <option value="5"
-                    <%= treatmentId != null && treatmentId == 5
-                        ? "selected" : "" %>>
-
-                    Root Canal Treatment
-
-                </option>
+                <%
+                    if (treatments != null) {
+                        for (Map<String, Object> treatment : treatments) {
+                            Integer optionId =
+                                    (Integer) treatment.get("treatmentId");
+                %>
+                    <option value="<%= optionId %>"
+                        <%= optionId.equals(treatmentId) ? "selected" : "" %>>
+                        <%= treatment.get("treatmentName") %>
+                    </option>
+                <%
+                        }
+                    }
+                %>
 
 
             </select>
@@ -422,34 +368,24 @@
             </label>
 
             <select
-                name="status">
+                name="status"
+                required>
 
-                <option
-                    <%= "Scheduled".equals(
-                            request.getAttribute("status"))
-                            ? "selected" : "" %>>
-
-                    Scheduled
-
-                </option>
-
-                <option
-                    <%= "Completed".equals(
-                            request.getAttribute("status"))
-                            ? "selected" : "" %>>
-
-                    Completed
-
-                </option>
-
-                <option
-                    <%= "Cancelled".equals(
-                            request.getAttribute("status"))
-                            ? "selected" : "" %>>
-
-                    Cancelled
-
-                </option>
+                <%
+                    String[] statuses = {
+                        "Pending", "Confirmed", "Scheduled",
+                        "Completed", "Cancelled", "Rejected"
+                    };
+                    for (String statusOption : statuses) {
+                %>
+                    <option value="<%= statusOption %>"
+                        <%= statusOption.equals(request.getAttribute("status"))
+                                ? "selected" : "" %>>
+                        <%= statusOption %>
+                    </option>
+                <%
+                    }
+                %>
 
             </select>
 
@@ -501,6 +437,11 @@
 
 
 </div>
+
+<a href="${pageContext.request.contextPath}/ManageAppointmentsServlet"
+   class="back-link">
+    ← Back to Manage Appointments
+</a>
 
 </div>
 

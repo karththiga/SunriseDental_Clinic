@@ -34,7 +34,7 @@
         }
 
         .navbar {
-            background: #1f6feb;
+            background: #21a7a0;
             color: white;
             padding: 18px 40px;
             display: flex;
@@ -55,7 +55,7 @@
 
         .logout-btn {
             background: white;
-            color: #1f6feb;
+            color: #176b87;
             text-decoration: none;
             padding: 9px 18px;
             border-radius: 6px;
@@ -114,7 +114,7 @@
 
         .menu-card h3 {
             margin-top: 0;
-            color: #1f6feb;
+            color: #176b87;
         }
 
         .menu-card p {
@@ -123,6 +123,7 @@
             line-height: 1.5;
         }
     </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/clinic-theme.css">
 </head>
 
 <body>
@@ -187,7 +188,7 @@
 
         </a>
 
-        <a href="#"
+        <a href="${pageContext.request.contextPath}/ManageAppointmentsServlet"
            class="menu-card">
 
             <h3>
@@ -240,7 +241,7 @@
 
 </a>
 
-        <a href="#"
+        <a href="${pageContext.request.contextPath}/ReportsServlet"
            class="menu-card">
 
             <h3>
@@ -253,7 +254,7 @@
 
         </a>
 
-        <a href="#"
+        <a href="help.jsp"
            class="menu-card">
 
             <h3>

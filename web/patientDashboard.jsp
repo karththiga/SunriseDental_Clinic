@@ -47,7 +47,7 @@
         }
 
         .navbar {
-            background: #1f6feb;
+            background: #21a7a0;
             color: white;
 
             padding: 18px 40px;
@@ -64,7 +64,7 @@
 
         .logout {
             background: white;
-            color: #1f6feb;
+            color: #176b87;
 
             padding: 9px 18px;
 
@@ -140,7 +140,7 @@
 
         .card h3 {
             margin-top: 0;
-            color: #1f6feb;
+            color: #176b87;
         }
 
         .card p {
@@ -151,6 +151,7 @@
 
     </style>
 
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/clinic-theme.css">
 </head>
 
 
@@ -214,6 +215,11 @@
                 availability and confirm a slot instantly.
             </p>
 
+        </a>
+
+        <a href="help.jsp" class="card">
+            <h3>Help</h3>
+            <p>View instructions for reservations, confirmations and account access.</p>
         </a>
 
 
